@@ -34,11 +34,6 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     description="Python package for crawler data and extract main information ",  # noqa
-    # entry_points={
-    #     'console_scripts': [
-    #         'framler=framler.cli:main',
-    #     ],
-    # },
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,
@@ -50,6 +45,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/huyhoang17/framler',
-    version='0.0.2',
+    version='0.0.3',
     zip_safe=False,
 )
