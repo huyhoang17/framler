@@ -66,6 +66,11 @@ Features
 
 - Add document
 
+Reference
+---------
+
+Based on newspaper's API library: https://github.com/codelucas/newspaper
+
 Credits
 -------
 
