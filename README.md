@@ -49,11 +49,13 @@ Features
     - .... 
 
 - Folder structure
+```
     ├── articles.py - contain article's meta information 
     ├── cleaners.py - base object to clean article's content, include: html, text, stopword, ...
     ├── extractors.py - base extractor to auto extract main information for any articles, must include: url, title, content, author
     ├── parsers.py - base class to define some short methods to extract information from html elements, ex: regex define; find element by tag, id, class, ...
     └── utils.py - define some common and useful methods
+```
 
 - Some prerequisite libraries:
     - Selenium
