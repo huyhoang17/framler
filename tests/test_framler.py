@@ -7,7 +7,7 @@ import pytest
 
 from click.testing import CliRunner
 
-from framler import framler
+from framler import temp  # noqa
 from framler import cli
 
 

@@ -4,7 +4,11 @@
 
 __author__ = """Phan Hoang"""
 __email__ = 'phan.huy.hoang@framgia.com '
-__version__ = '0.0.3'
+__title__ = 'framler'
+__license__ = 'MIT'
+__copyright__ = 'Copyright 2019, Phan Hoang'
 
 
-from .framler import add, minus  # noqa
+from .temp import *  # noqa
+from .extractors import *  # noqa
+from .parsers import *  # noqa
