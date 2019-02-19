@@ -48,6 +48,13 @@ Features
     - Summary content  
     - .... 
 
+- Additional features:
+    - Export data to file, database (csv, mongo, ....)
+    - Multiprocessing
+    - Render and crawl website contains Js
+    - Define base solution to extract main information from website (title, text, author, published_data, ....)
+    - ....
+
 - Folder structure
 ```
     ├── articles.py - contain article's meta information 
@@ -61,6 +68,18 @@ Features
     - Selenium
     - Requests
     - beautifulsoup4
+
+### Command
+
+```
+pip install framler
+```
+
+or
+
+```
+pip install --upgrade framler
+```
 
 ### Usage
 
