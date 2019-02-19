@@ -12,9 +12,9 @@ class DanTriParser(BaseParser):
         self.mode = mode
         super().__init__()
 
-    def call_extractor(self, mode, executable_path):
+    def call_extractor(self, mode):
         self.extractor = SeleniumExtractor(
-            executable_path=executable_path
+            executable_path=self.BASE_DRIVER
         )
 
     def parse(self, url, mode="selenium"):

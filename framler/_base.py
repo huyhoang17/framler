@@ -4,6 +4,9 @@ import yaml
 
 from .cleaners import remove_multiple_space
 from .utils import download_driver
+from .log import get_logger
+
+logger = get_logger(__name__)
 
 
 class BaseExtractor(ABC):
@@ -17,8 +20,8 @@ class BaseParser(object):
 
     def __init__(self):
         self.load_config()
-        self.call_extractor(self.mode, self.BASE_DRIVER)
         self.check_driver()
+        self.call_extractor(self.mode)
 
     def load_config(self):
         self.BASE_CONFIG = os.path.join(
@@ -35,6 +38,7 @@ class BaseParser(object):
 
     def check_driver(self):
         if not os.path.exists(self.BASE_DRIVER):
+            logger.info("Downloading firefox selenium driver ....")
             download_driver()
 
     def get_config(self):
