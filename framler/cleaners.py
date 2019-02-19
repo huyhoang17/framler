@@ -3,20 +3,20 @@ import re
 
 
 def remove_emails(text):
-    return re.sub('\S*@\S*\s?', '', text)
+    return re.sub('\S*@\S*\s?', '', text)  # noqa
 
 
 def remove_newline_characters(text):
-    return re.sub('\s+', ' ', text)
+    return re.sub('\s+', ' ', text)  # noqa
 
 
 def remove_links_content(text):
-    text = re.sub(r"http\S+", "", text)
+    text = re.sub(r"http\S+", "", text)  # noqa
     return text
 
 
 def remove_multiple_space(text):
-    return re.sub("\s\s+", " ", text)
+    return re.sub("\s\s+", " ", text)  # noqa
 
 
 def remove_punctuation(text):

@@ -20,17 +20,17 @@ Features
 ### Package to crawl and extract main information for online newspapers
 
 - Some online newspapers:
-    1. Dan Tri: https://dantri.com.vn/
-    2. VnExpress: https://vnexpress.net/
-    3. vietnamnet: https://vietnamnet.vn/
-    4. Nhan Dan: http://www.nhandan.com.vn/
-    5. Tuoi Tre: https://tuoitre.vn/
-    6. Lao Dong: https://laodong.vn/
-    7. Doi song phap luat: http://www.doisongphapluat.com/
-    8. Thanh Nien: https://thanhnien.vn/
-    9. VOV: https://vov.vn/
-    10. Zing: https://news.zing.vn/
-    11. .... 
+    - Dan Tri: https://dantri.com.vn/
+    - VnExpress: https://vnexpress.net/
+    - vietnamnet: https://vietnamnet.vn/
+    - Nhan Dan: http://www.nhandan.com.vn/
+    - Tuoi Tre: https://tuoitre.vn/
+    - Lao Dong: https://laodong.vn/
+    - Doi song phap luat: http://www.doisongphapluat.com/
+    - Thanh Nien: https://thanhnien.vn/
+    - VOV: https://vov.vn/
+    - Zing: https://news.zing.vn/
+    - .... 
 
 - Main information:
     - Url

@@ -1,0 +1,22 @@
+site:
+  DanTri:
+    title:
+      name: "h1"
+    author:
+      name: None
+    text:
+      class_: "detail-content"
+    pubd:
+      class_: "tt-capitalize"
+    tags:
+      class_: "news-tag-list"
+    image_urls:
+      class_: "image"
+    top_image_url:
+      name: None
+
+driver:
+  browser: firefox
+  download_link: https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+  untar_folder: .framler_firefox_driver
+  untar_fname: geckodriver

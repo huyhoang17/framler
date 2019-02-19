@@ -1,36 +1,29 @@
 from ._base import BaseParser
 from .articles import Article
-from .cleaners import remove_multiple_space
+from .extractors import SeleniumExtractor
 
 
-# TESTING
 class DanTriParser(BaseParser):
 
-    BASE_URL = 'https://dantri.com.vn'
+    BASE_URL = "https://dantri.com.vn"
+    PARSER = "DanTri"
 
-    def __init__(self):
-        self.call_extractor()
+    def __init__(self, mode="selenium"):
+        self.mode = mode
+        super().__init__()
 
-    def call_extractor(self, mode="requests"):
-        super().call_extractor()
+    def call_extractor(self, mode, executable_path):
+        self.extractor = SeleniumExtractor(
+            executable_path=executable_path
+        )
 
-    def parse(self, url, mode='requests'):
+    def parse(self, url, mode="selenium"):
         self.article = Article(url)
         self.soup = self.get_soup(url)
+        self.cfg = self.get_config()
+        super().parse(url)
 
-        # title
-        self.article.title = ' '.join(
-            [i.get_text() for i in self.soup.find_all('h1')]).strip()
-
-        # text
-        text = self.soup.find_all(class_="detail-content")
-        self.article.text = remove_multiple_space(
-            " ".join([i.get_text() for i in text])).strip()
-
-        # tags
-        tags = self.soup.find_all(class_='news-tag-list')
-        self.article.tags = remove_multiple_space(
-            " ".join([i.get_text() for i in tags])).strip()
+        self.article.authors = []
         self.article.text.replace(self.article.tags, "")
 
         # image_urls
@@ -38,6 +31,9 @@ class DanTriParser(BaseParser):
             img.img['src']
             for img in self.soup.find_all(class_="image")
         ]
+
+        # top image
+        self.article.top_image_url = self.article.image_urls[0]
 
         return self.article
 

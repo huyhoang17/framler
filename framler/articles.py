@@ -9,9 +9,9 @@ class Article:
 
         # some information need to extract
         self.title = ""
-        self.content = ""
+        self.text = ""
         self.authors = []
-        self.published_data = ""
+        self.published_date = ""
         self.top_image_url = ""
         self.image_urls = []
         self.tags = []
