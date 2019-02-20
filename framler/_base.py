@@ -1,6 +1,12 @@
-from abc import ABC, abstractmethod
+# from abc import ABC, abstractmethod
+import csv
 import os
 import yaml
+from multiprocessing import Pool, cpu_count
+from time import time
+
+from bs4 import BeautifulSoup
+import requests
 
 from .cleaners import remove_multiple_space
 from .utils import download_driver
@@ -9,11 +15,70 @@ from .log import get_logger
 logger = get_logger(__name__)
 
 
-class BaseExtractor(ABC):
+class BaseExtractor(object):
+    """
+    :param pmode: parsing mode (lxml or html.parser or ....)
+    """
+    PMODE = "lxml"
 
-    @abstractmethod
-    def get_content(self):
+    def __init__(self):
         pass
+
+    def set_browser(self, browser):
+        """
+        :param browser: firefox, chrome; defaut to firefox
+        """
+        self.BROWSER = browser
+
+    def set_rmode(self, rmode):
+        self.RMODE = rmode
+
+    def set_pmode(self, pmode):
+        self.PMODE = pmode
+
+    def get_content(self, url):
+        print(url)
+        try:
+            if self.RMODE == "selenium":
+                self.driver.get(url)
+                return self.driver.page_source
+            elif self.RMODE == "requests":
+                req = requests.get(url)
+                return req.text
+        except Exception as e:
+            logger.exception(e)
+
+    def get_soup(self, url):
+
+        try:
+            soup = BeautifulSoup(self.get_content(url), self.PMODE)
+            return soup
+        except Exception as e:
+            logger.exception(e)
+
+    def retry_connection(self, url, retry=3, timeout=30):
+        pass
+
+    def run_process(self, url):
+        if self.retry_connection(url):
+            html = self.get_content(url)
+            output_list = self.parse(url, html)
+            self.write_to_file(output_list)
+        else:
+            logger.warning("Can not fetch data from: %s", url)
+
+    def run_processes(self, samples):
+        logger.info("Number of cpu: %s", cpu_count())
+
+        start_time = time()
+        p = Pool(cpu_count() - 1)
+        p.map(self.get_content, samples)
+        p.close()
+        p.join()
+        end_time = time()
+
+        elapsed_time = str(end_time - start_time)
+        logger.info("Elapsed run time: %s seconds", elapsed_time)
 
 
 class BaseParser(object):
@@ -84,3 +149,12 @@ class BaseParser(object):
         # top image
         self.article.top_image_url = \
             self.get_strs(**self.cfg["top_image_url"])
+
+
+class BaseExporter(object):
+
+    def __init__(self):
+        pass
+
+    def export(self):
+        pass

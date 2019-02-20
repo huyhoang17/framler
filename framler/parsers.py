@@ -1,3 +1,5 @@
+import csv
+
 from ._base import BaseParser
 from .articles import Article
 from .extractors import SeleniumExtractor
@@ -36,6 +38,12 @@ class DanTriParser(BaseParser):
         self.article.top_image_url = self.article.image_urls[0]
 
         return self.article
+
+    def write_to_file(article_info):
+        with open('output.csv', 'a') as csvfile:
+            fieldnames = ['title', 'text', 'url']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writerow(article_info)
 
 
 class AutoCrawlParser(BaseParser):
