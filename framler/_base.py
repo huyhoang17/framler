@@ -1,5 +1,4 @@
 # from abc import ABC, abstractmethod
-import csv
 import os
 import yaml
 from multiprocessing import Pool, cpu_count
@@ -112,6 +111,12 @@ class BaseParser(object):
     def get_content(self, url):
         return self.extractor.get_content(url)
 
+    def exclude_content(self, elements):
+        pass
+
+    def extract_nest_elements(self, elements):
+        pass
+
     def get_soup(self, url):
         return self.extractor.get_soup(url)
 
@@ -120,7 +125,10 @@ class BaseParser(object):
             [s.get_text() for s in self.soup.find_all(**kwargs)])
         ).strip()
 
-    def call_extractor(self, mode, executable_path):
+    def get_links(self, **kwargs):
+        return [img.img["src"] for img in self.soup.find_all(**kwargs)]
+
+    def call_extractor(self, mode):
         pass
 
     def parse(self, url, mode="selenium"):
@@ -128,27 +136,27 @@ class BaseParser(object):
         # URL
         self.article.url = url
 
-        # title
+        # title::text
         self.article.title = self.get_strs(**self.cfg["title"])
 
-        # author
+        # author::text
         self.article.author = self.get_strs(**self.cfg["author"])
 
-        # text (content)
+        # text::text
         self.article.text = self.get_strs(**self.cfg["text"])
 
-        # published_date
+        # published_date::text
         self.article.published_date = self.get_strs(**self.cfg["pubd"])
 
-        # tags
+        # tags::text
         self.article.tags = self.get_strs(**self.cfg["tags"])
 
-        # image_urls
-        self.article.image_urls = self.get_strs(**self.cfg["image_urls"])
+        # image_urls::links
+        self.article.image_urls = self.get_links(**self.cfg["image_urls"])
 
         # top image
-        self.article.top_image_url = \
-            self.get_strs(**self.cfg["top_image_url"])
+        # self.article.top_image_url = \
+        #     self.get_strs(**self.cfg["top_image_url"])
 
 
 class BaseExporter(object):

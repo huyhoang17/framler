@@ -1,5 +1,11 @@
+driver:
+  browser: firefox
+  download_link: https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+  untar_folder: .framler_firefox_driver
+  untar_fname: geckodriver
+
 site:
-  DanTri:
+  dantri:
     title:
       name: "h1"
     author:
@@ -12,11 +18,64 @@ site:
       class_: "news-tag-list"
     image_urls:
       class_: "image"
-    top_image_url:
-      name: None
 
-driver:
-  browser: firefox
-  download_link: https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
-  untar_folder: .framler_firefox_driver
-  untar_fname: geckodriver
+  vnexpress:
+    title:
+      class_: "title_news"
+    author:
+      name: None
+    text:
+      class_: "fck_detail"
+    pubd:
+      class_: "block_timer"
+    tags:
+      class_: "tag_item"
+    image_urls:
+      class_: "tplCaption"
+
+  vietnamnet:
+    title:
+      name: "h1"
+      class_: "title"
+    author:
+      name: None
+    text:
+      id: "ArticleContent"
+      class_: "ArticleContent"
+    pubd:
+      class_: "ArticleDate"
+    tags:
+      id: "BoxTag"
+    image_urls:
+      class_: "ImageBox"
+
+  tuoitrevn:
+    title:
+      name: "h1"
+      class_: "article-title"
+    author:
+      class_: "author"
+    text:
+      id: "main-detail-body"
+    pubd:
+      class_: "date-time"
+    tags:
+      class_: "tags-item"
+    image_urls:
+      class_: "detail-img-lightbox"
+
+  thanhnien:
+    title:
+      name: "h1"
+      class_: "details__headline"
+    author:
+      class_: "details__author__meta"
+    text:
+      class_: "details__content"
+    pubd:
+      class_: "details__meta"
+    tags:
+      class_: "details__tags"
+    image_urls:
+      name: "a"
+      itemprop: "contentUrl"
