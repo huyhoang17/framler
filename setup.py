@@ -11,7 +11,7 @@ with open('README.md') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-with open('./requirements.txt') as f:
+with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setup_requirements = ['pytest-runner', ]
@@ -37,7 +37,8 @@ setup(
     description="Python package for crawler data and extract main information ",  # noqa
     install_requires=requirements,
     license="MIT license",
-    long_description=readme + '\n\n' + history,
+    long_description=readme,
+    long_description_content_type='text/markdown',
     include_package_data=True,
     keywords='framler',
     name='framler',
@@ -46,6 +47,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/huyhoang17/framler',
-    version='0.0.7',
+    version='0.0.8',
     zip_safe=False,
 )

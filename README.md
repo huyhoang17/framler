@@ -3,6 +3,7 @@ framler
 
 [![PyPi](https://img.shields.io/pypi/v/framler.svg)](https://pypi.python.org/pypi/framler) 
 [![Build Status](https://travis-ci.org/huyhoang17/framler.svg?branch=master)](https://travis-ci.org/huyhoang17/framler) 
+[![Coverage Status](https://coveralls.io/repos/github/huyhoang17/framler/badge.svg?branch=master)](https://coveralls.io/github/huyhoang17/framler?branch=master)
 [![Updates](https://pyup.io/repos/github/huyhoang17/framler/shield.svg)](https://pyup.io/repos/github/huyhoang17/framler/)  
 [![Python 3](https://pyup.io/repos/github/huyhoang17/framler/python-3-shield.svg)](https://pyup.io/repos/github/huyhoang17/framler/)
 [![Documentation Status](https://readthedocs.org/projects/framler/badge/?version=latest)](https://framler.readthedocs.io/en/latest/?badge=latest)
@@ -23,10 +24,8 @@ Features
     - Dan Tri: https://dantri.com.vn/
     - VnExpress: https://vnexpress.net/
     - vietnamnet: https://vietnamnet.vn/
-    - Nhan Dan: http://www.nhandan.com.vn/
     - Tuoi Tre: https://tuoitre.vn/
     - Lao Dong: https://laodong.vn/
-    - Doi song phap luat: http://www.doisongphapluat.com/
     - Thanh Nien: https://thanhnien.vn/
     - VOV: https://vov.vn/
     - Zing: https://news.zing.vn/
@@ -83,36 +82,44 @@ pip install --upgrade framler
 
 ### Usage
 
+- Supports
+    - dantri
+    - vnexpress
+    - vietnamnet
+    - tuoitrevn
+    - thanhnien
+
 ```
 In [1]: import framler                                                                                                                                                                                              
 
-In [2]: dt = framler.DanTriParser()                                                                                                                                                                                 
+In [2]: dt = framler.NewspapersParser("thanhnien")                                                                                                                                                                                 
 2829it [00:30, 91.76it/s] 
 geckodriver
 2019-02-19 14:04:24,324 - framler.utils - INFO - Untar completed!
 INFO:framler.utils:Untar completed!
 
-In [3]: url = "https://dantri.com.vn/kinh-doanh/kiem-tra-dot-xuat-tram-dau-giay-lam-ro-nghi-van-that-thoat-phi-cao-toc-20190218090641769.htm"                                                                       
+In [3]: url = "https://thanhnien.vn/thoi-su/ngan-hang-vdb-sai-pham-gi-tai-du-an-gang-thep-nghin-ti-dap-chieu-1054082.html"                                                                       
 
 In [4]: article = dt.parse(url)                                                                                                                                                                                     
 
 In [5]: article.title                                                                                                                                                                                               
-Out[5]: 'Kiểm tra đột xuất trạm Dầu Giây làm rõ nghi vấn thất thoát phí cao tốc'
+Out[5]: 'Ngân hàng VDB sai phạm gì tại dự án gang thép nghìn tỉ ‘đắp chiếu’?'
 
 In [6]: article.text                                                                                                                                                                                                
-Out[6]: 'Cao tốc TPHCM - Long Thành - Dầu Giây Việc kiểm tra đột xuất liên quan tới vụ cướp với số tiền 2,2 tỷ đồng tại trạm thu phí Dầu Giây (Đồng Nai) do\xa0Tổng công ty Đầu tư phát triển đường cao tốc Việt Nam (VEC) quản lý xảy ra ngày mùng 3 Tết vừa qua, gây ra nhiều tranh cãi trong dư luận về thiếu minh bạch trong doanh thu.\nTheo đó, Tổng cục Đường bộ Việt Nam ban hành quyết định kiểm tra đột xuất công tác tổ chức và hoạt động của trạm thu phí này, thời gian thực hiện kiểm tra đột xuất kéo dài trong 5 ngày, bắt đầu từ ngày 18/2 đến 22/2.\nPhạm vi kiểm tra gồm: Công tác tổ chức và hoạt động của trạm thu phí dịch vụ sử dụng đường bộ Dầu Giây. Thành viên đoàn kiểm tra của Tổng cục bao gồm các vụ chức năng như: Pháp chế - Thanh tra, Tài chính,\xa0Khoa học công nghệ, Môi trường và Hợp tác quốc tế.\nTổng cục Đường bộ cũng đã đề nghị Cơ quan cảnh sát điều tra của Bộ Công an phối hợp trong lần kiểm tra này.\nLãnh đạo Tổng cục Đường bộ cho biết: “Việc kiểm tra được thực hiện do người dân có nhiều ý kiến nghi ngờ về vấn đề thu phí sau vụ cướp 2,2 tỷ đồng tại trạm thu phí này ngày mùng 3 Tết. Sau khi có kết quả kiểm tra, chúng tôi sẽ công bố công khai cho dư luận”.\nĐược biết, sau khi xảy ra vụ cướp, VEC cho hay trong dịp Tết do ngân hàng không thực hiện dịch vụ thu tiền thu phí tại các trạm thu phí nên tại thời điểm xảy ra vụ cướp, tổng số tiền trong két sắt tại Phòng Kế toán vé thẻ trạm Dầu Giây là hơn 3,2 tỷ đồng.\nĐây là số tiền bao gồm: Tiền doanh thu của 2 ca ngày 4/2/2019; 3 ca ngày 5/2/2019 và 3 ca ngày 6/2/2019 (1 ca/8h), tiền quỹ dự phòng tình huống khẩn cấp, tiền lẻ đơn vị vận hành khai thác tuyến (Công ty VECE) chuẩn bị để kịp thời phục vụ khách hàng dịp Tết.\n"Khi xảy ra vụ việc, bọn cướp đã lấy đi số tiền thu phí là 2,2 tỷ đồng, số tiền thực tế còn lại tại trạm được kiểm đếm ngay sau vụ cướp là trên 1 tỷ đồng." - đại diện VEC nói.\nTheo VEC, trong 9 ngày nghỉ Tết Nguyên đán vừa qua, cao tốc TPHCM - Long Thành - Dầu Giây có lượng phương tiện bình quân một ngày đêm là hơn 43.000 lượt qua tuyến; doanh thu bình quân một ngày đêm tại 3 trạm thu phí trên toàn tuyến đạt 3,24 tỷ đồng. Ngày cao điểm nhất (10/2- mùng 6 Tết), tuyến đưa đón 59.650 lượt phương tiện.\nCao tốc TP HCM - Long Thành - Dầu Giây dài 55 km, đi qua địa phận TPHCM và tỉnh Đồng Nai. Công trình được khánh thành toàn tuyến vào đầu năm 2015 giúp rút ngắn đường từ TP HCM về Vũng Tàu rất nhiều so với trước đây.\nC.N.Q Tag : trạm thu phí\n, Long Thành - Dầu Giây\n, thất thoát phí cao tốc'
+Out[6]: 'Đề nghị Bộ Tài chính xử lý trách nhiệm tại VDB\nĐây là số tiền nằm trong các gói thầu mà Thanh tra Chính phủ vừa kết luận sai phạm, thất thoát tại dự án mở rộng sản xuất giai đoạn 2\xa0của Công ty cổ phần gang thép Thái Nguyên (TISCO).\nDự án có tổng mức đầu tư hơn 3.800 tỉ đồng, sau 5 năm triển khai đội vốn lên tới 8.104 tỉ đồng. Sai phạm xảy ra ở tất cả các khâu, có liên quan đến trách nhiệm của TISCO, Tổng Công ty thép (VNS), Bộ Công thương...\nNhà máy đã "đắp chiếu" từ năm 2013 đến nay, với khoản lãi vay ngân hàng phải trả gần 40 tỉ đồng/tháng. Hai ngân hàng liên quan, giải ngân cho dự án này gồm VDB và Ngân hàng Công thương (Vietinbank). Theo Thanh tra chính phủ, đối với VDB, Chi nhánh Thái Nguyên, trên cơ sở đề nghị của TISCO, VDB Chi nhánh Thái Nguyên đã giải ngân cho Tổng Công ty cổ phần Xây dựng công nghiệp Việt Nam (Vinaincon), các nhà thầu phụ khác 757 tỉ đồng theo đơn giá điều chỉnh không đúng Hợp đồng EPC số 01#. Theo Quyết định số 1515/QĐ-TTg, VDB là ngân hàng chính sách do nhà nước nắm giữ 100% vốn điều lệ. VDB được áp dụng tỷ lệ dự trữ bắt buộc bằng 0% và không phải tham gia bảo hiểm tiền gửi. Do hoạt động của VDB không vì mục đích lợi nhuận nên được ngân sách nhà nước cấp bù chênh lệch lãi suất và phí quản lý, được Chính phủ bảo đảm khả năng thanh toán, được miễn nộp thuế và các khoản nộp ngân sách nhà nước. Vốn điều lệ của VDB 15.086 tỉ đồng và dự kiến tăng lên 30.000 tỉ đồng vào năm 2020. Tại hợp đồng EPC 01#, Vinaincon sau khi trở thành nhà thầu phụ, được giao thực hiện thi công với giá trị tạm tính hơn 764 tỉ đồng, đã lập tức ký hợp đồng giao việc với 29 nhà thầu khác với giá trị hơn 505 tỉ đồng và thu phí quản lý 5 - 10% giá trị hợp đồng. Đây là hành vi cố ý làm trái quy định pháp luật về đầu tư.\nTừ đó, Thanh tra Chính phủ kiến nghị Bộ Công thương chủ trì phối hợp với Bộ Tài chính, Ngân hàng nhà nước, Bộ Kế hoạch - Đầu tư rà soát, xử lý những tồn tại, áp dụng cơ chế giảm lãi vay phát sinh trong thời gian dự án dừng thi công, Tisco không có khả năng thanh toán, báo cáo Thủ tướng cho ý kiến xử lý những vướng mắc nếu có. Thanh tra Chính phủ cũng kiến nghị giao Bộ Tài chính theo thẩm quyền chỉ đạo, kiểm điểm xử lý trách nhiệm tổ chức, cá nhân tại VDB, VDB Chi nhánh Thái Nguyên có khuyết điểm, nêu tại kết luận thanh tra. Nguy cơ phá sản, mất vốn\nTheo nguồn tin của Thanh Niên, đến nay, VDB vẫn chưa thực hiện được việc cơ cấu nợ gốc và lãi cho TISCO. Hàng tháng, VDB vẫn thông báo thu nợ, tính lãi phạt và đang xếp tín dụng của TISCO vào nợ xấu nhóm 5. Đến thời điểm 31.5.2018, TISCO đang nợ VDB 1.573 tỉ đồng, trong đó, nợ quá hạn là 415 tỉ đồng.\nLiên quan đến việc cho vay dự án này còn có Tổng Công ty Đầu tư và Kinh doanh vốn nhà nước (SCIC). Ngày 20.11.2014, Văn phòng Chính phủ ban hành văn bản số 2339/TTg-KTTH gửi các bộ, ngành, VNS và Tisco, trong đó có nội dung “tiếp tục thực hiện dự án với tổng mức đầu tư điều chỉnh là 8.104 tỉ đồng. SCIC góp tối thiếu 1.000 tỉ đồng”.\nTin liên quan Dự án gang thép ngàn tỉ \'đắp chiếu\': Bán thầu hưởng phí trái luật\nHàng ngàn tỉ đồng \'đốt\' tại dự án gang thép Thái Nguyên\nKiến nghị Bộ Công an điều tra 4 vụ sai phạm tại Gang thép Thái Nguyên Bên cạnh đó, TISCO cũng ký với Vietinbank Chi nhánh Hà Nội hợp đồng tín dụng số 01/2010/HĐTD ngày 25.1.2010 và các phụ lục hợp đồng triển khai dự án với giá trị hợp đồng không vượt quá 1.863 tỉ đồng, số tiền đã giải ngân thanh toán giá trị thiết bị dự án là 1.458 tỉ đồng (đến 31.12.2016, số tiền Tisco còn nợ là 225 tỉ đồng và 72,1 triệu USD). Hiện, khoản nợ vay tại VietinBank đã được VietinBank cơ cấu thời gian trả nợ cho TISCO đến tháng 6.2019.\nTuy nhiên, báo cáo tại Đại hội cổ đông đầu năm 2019 của TISCO cho thấy, công ty này đứng trước nguy cơ phá sản, có thể mất vốn đầu tư của các cổ đông, trong đó có cổ đông nhà nước là Tổng Công ty Thép Việt Nam (chiếm 65% vốn điều lệ - 1.196 tỉ đồng), các ngân hàng mất vốn do TISCO không trả nợ được, gần 5.000 người lao động không có việc làm.'
 
 In [7]: article.published_date                                                                                                                                                                                      
-Out[7]: 'Thứ Hai 18/02/2019 - 09:26'
+Out[7]: '13:17 - 22/02/2019\n0\nThanh Niên Online'
 
 In [8]: article.tags                                                                                                                                                                                                
-Out[8]: 'Tag : trạm thu phí\n, Long Thành - Dầu Giây\n, thất thoát phí cao tốc'
+Out[8]: '#tisco#thái nguyên#vdb#ngân hàng#phát triển#dự án ngàn tỉ đắp chiếu'
 
 In [9]: article.image_urls                                                                                                                                                                                          
 Out[9]: 
-['https://icdn.dantri.com.vn/thumb_w/640/2019/02/13/vec-cao-toc-1-1550040015793.jpg',
- 'https://icdn.dantri.com.vn/thumb_w/640/2019/02/12/bannerchanbai-1549926885683.gif',
- 'https://icdn.dantri.com.vn/thumb_w/640/2019/02/12/bannerchanbai-1549926885683.gif']
+['https://image.thanhnien.vn/660/uploaded/xuanvu/vang/1111_adrl.jpg']
+
+In [10]: article.author                                                                                                                                                                                      
+Out[10]: 'Anh Vũ ngovutb@gmail.com'
 ```
 
 ### TODO
