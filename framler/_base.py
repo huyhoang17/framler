@@ -1,4 +1,3 @@
-# from abc import ABC, abstractmethod
 import os
 import yaml
 from multiprocessing import Pool, cpu_count
@@ -36,7 +35,7 @@ class BaseExtractor(object):
         self.PMODE = pmode
 
     def get_content(self, url):
-        print(url)
+        logger.info(url)
         try:
             if self.RMODE == "selenium":
                 self.driver.get(url)
@@ -48,7 +47,6 @@ class BaseExtractor(object):
             logger.exception(e)
 
     def get_soup(self, url):
-
         try:
             soup = BeautifulSoup(self.get_content(url), self.PMODE)
             return soup
@@ -85,7 +83,7 @@ class BaseParser(object):
     def __init__(self):
         self.load_config()
         self.check_driver()
-        self.call_extractor(self.mode)
+        self.call_extractor()
 
     def load_config(self):
         self.BASE_CONFIG = os.path.join(
@@ -128,10 +126,10 @@ class BaseParser(object):
     def get_links(self, **kwargs):
         return [img.img["src"] for img in self.soup.find_all(**kwargs)]
 
-    def call_extractor(self, mode):
+    def call_extractor(self):
         pass
 
-    def parse(self, url, mode="selenium"):
+    def parse(self, url):
 
         # URL
         self.article.url = url
@@ -153,10 +151,6 @@ class BaseParser(object):
 
         # image_urls::links
         self.article.image_urls = self.get_links(**self.cfg["image_urls"])
-
-        # top image
-        # self.article.top_image_url = \
-        #     self.get_strs(**self.cfg["top_image_url"])
 
 
 class BaseExporter(object):

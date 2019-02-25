@@ -7,18 +7,18 @@ class NewspapersParser(BaseParser):
 
     def __init__(self, parser, mode="selenium"):
         self.PARSER = parser
-        self.mode = mode
+        self.RMODE = mode
         super().__init__()
 
-    def call_extractor(self, mode="selenium"):
-        if mode == "selenium":
+    def call_extractor(self):
+        if self.RMODE == "selenium":
             self.extractor = SeleniumExtractor(
                 executable_path=self.BASE_DRIVER
             )
-        elif mode == "requests":
+        elif self.RMODE == "requests":
             self.extractor = RequestsExtractor()
 
-    def parse(self, url, mode="selenium"):
+    def parse(self, url):
         self.article = Article(url)
         self.soup = self.get_soup(url)
         self.cfg = self.get_config()
