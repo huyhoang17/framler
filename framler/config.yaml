@@ -8,7 +8,7 @@ site:
   dantri:
     title:
       name: "h1"
-    author:
+    authors:
       name: None
     text:
       class_: "detail-content"
@@ -22,7 +22,7 @@ site:
   vnexpress:
     title:
       class_: "title_news"
-    author:
+    authors:
       name: None
     text:
       class_: "fck_detail"
@@ -37,7 +37,7 @@ site:
     title:
       name: "h1"
       class_: "title"
-    author:
+    authors:
       name: None
     text:
       id: "ArticleContent"
@@ -53,7 +53,7 @@ site:
     title:
       name: "h1"
       class_: "article-title"
-    author:
+    authors:
       class_: "author"
     text:
       id: "main-detail-body"
@@ -68,7 +68,7 @@ site:
     title:
       name: "h1"
       class_: "details__headline"
-    author:
+    authors:
       class_: "details__author__meta"
     text:
       class_: "details__content"

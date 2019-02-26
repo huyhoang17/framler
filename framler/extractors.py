@@ -1,8 +1,11 @@
+import os
+
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
 from ._base import BaseExtractor
 from .log import get_logger
+from .utils import load_config
 
 logger = get_logger(__name__)
 
@@ -19,6 +22,8 @@ class SeleniumExtractor(BaseExtractor):
                  display_browser=False,
                  fast_load=False,
                  executable_path=None):
+
+        self.cfg = load_config()["driver"]
 
         self.profile = webdriver.FirefoxProfile()
         self.options = Options()
@@ -41,16 +46,18 @@ class SeleniumExtractor(BaseExtractor):
             self.profile.exp = "input/adblock.xpi"
             self.profile.add_extension(extension=self.profile.exp)
 
-        # Add path to your Chromedriver
+        # Add path to your FirefoxDriver
         if executable_path is None:
-            self.driver = webdriver.Firefox(
-                options=self.options, firefox_profile=self.profile
+            executable_path = os.path.join(
+                os.path.expanduser('~'),
+                self.cfg["untar_folder"],
+                self.cfg["untar_fname"]
             )
-        else:
-            self.driver = webdriver.Firefox(
-                options=self.options, firefox_profile=self.profile,
-                executable_path=executable_path
-            )
+        logger.info("Executable path: %s", executable_path)
+        self.driver = webdriver.Firefox(
+            options=self.options, firefox_profile=self.profile,
+            executable_path=executable_path
+        )
 
         self.driver.set_page_load_timeout(timeout)
         self.driver.implicitly_wait(timeout)

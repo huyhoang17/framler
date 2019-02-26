@@ -1,0 +1,29 @@
+links:
+  - src
+  - data-src
+
+authors:
+  name:
+    - h1
+  attrs:
+    - name
+    - rel
+    - itemprop
+    - class
+    - id  
+  vals:
+    - details__headline
+    - author
+    - byline
+    - dc.creator
+    - byl
+
+image_url:
+  name:
+    - a
+  attrs:
+    - src
+    - data-src
+    - itemprop
+  vals:
+    - contentUrl

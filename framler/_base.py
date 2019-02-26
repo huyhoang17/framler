@@ -4,6 +4,7 @@ from multiprocessing import Pool, cpu_count
 from time import time
 
 from bs4 import BeautifulSoup
+from lxml import html
 import requests
 
 from .cleaners import remove_multiple_space
@@ -53,6 +54,13 @@ class BaseExtractor(object):
         except Exception as e:
             logger.exception(e)
 
+    def get_xpath_tree(self, url):
+        try:
+            tree = html.fromstring(self.get_content(url))
+            return tree
+        except Exception as e:
+            logger.exception(e)
+
     def retry_connection(self, url, retry=3, timeout=30):
         pass
 
@@ -82,7 +90,8 @@ class BaseParser(object):
 
     def __init__(self):
         self.load_config()
-        self.check_driver()
+        if self.RMODE == "selenium":
+            self.check_driver()
         self.call_extractor()
 
     def load_config(self):
@@ -103,11 +112,59 @@ class BaseParser(object):
             logger.info("Downloading firefox selenium driver ....")
             download_driver()
 
-    def get_config(self):
-        return self.cfg["site"][self.PARSER]
+    def call_extractor(self):
+        pass
 
     def get_content(self, url):
         return self.extractor.get_content(url)
+
+    def get_links_by_tag(self,
+                         tree,
+                         attr,
+                         val,
+                         src_attrs,
+                         name="*",
+                         fmt="//{}[@{}='{}']/@{}"):
+        matches = []
+        for src_attr in src_attrs:
+            xpath_seq = fmt.format(name, attr, val, src_attr)
+            res = tree.xpath(xpath_seq)
+            matches.extend(res)
+        return matches
+
+    def get_element_by_tag(self,
+                           tree,
+                           name,
+                           attr,
+                           val,
+                           get_text=True,
+                           fmt="//{}[@{}='{}']{}"):
+        if get_text:
+            text = "/text()"
+        xpath_seq = fmt.format(name, attr, val, text)
+        res = tree.xpath(xpath_seq)
+        return res
+
+    def get_elements_by_tag(self,
+                            tree,
+                            attrs,
+                            vals,
+                            names=["*"],
+                            get_text=True,
+                            all_=True):
+        matches = []
+        if all_:
+            names = "*"
+        for name in names:
+            for attr in attrs:
+                for val in vals:
+                    found = self.get_element_by_tag(
+                        tree, name, attr=attr,
+                        val=val, get_text=True
+                    )
+                    matches.extend(found)
+
+        return matches
 
     def exclude_content(self, elements):
         pass
@@ -115,8 +172,14 @@ class BaseParser(object):
     def extract_nest_elements(self, elements):
         pass
 
+    def extract_content_sub_elements(self, elements):
+        pass
+
     def get_soup(self, url):
         return self.extractor.get_soup(url)
+
+    def get_xpath_tree(self, url):
+        return self.extractor.get_xpath_tree(url)
 
     def get_strs(self, **kwargs):
         return remove_multiple_space(' '.join(
@@ -126,31 +189,30 @@ class BaseParser(object):
     def get_links(self, **kwargs):
         return [img.img["src"] for img in self.soup.find_all(**kwargs)]
 
-    def call_extractor(self):
-        pass
-
     def parse(self, url):
+
+        cfg = self.cfg["site"][self.PARSER]
 
         # URL
         self.article.url = url
 
         # title::text
-        self.article.title = self.get_strs(**self.cfg["title"])
+        self.article.title = self.get_strs(**cfg["title"])
 
         # author::text
-        self.article.author = self.get_strs(**self.cfg["author"])
+        self.article.authors = self.get_strs(**cfg["authors"])
 
         # text::text
-        self.article.text = self.get_strs(**self.cfg["text"])
+        self.article.text = self.get_strs(**cfg["text"])
 
         # published_date::text
-        self.article.published_date = self.get_strs(**self.cfg["pubd"])
+        self.article.published_date = self.get_strs(**cfg["pubd"])
 
         # tags::text
-        self.article.tags = self.get_strs(**self.cfg["tags"])
+        self.article.tags = self.get_strs(**cfg["tags"])
 
         # image_urls::links
-        self.article.image_urls = self.get_links(**self.cfg["image_urls"])
+        self.article.image_urls = self.get_links(**cfg["image_urls"])
 
 
 class BaseExporter(object):

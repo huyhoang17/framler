@@ -3,6 +3,14 @@ from .articles import Article
 from .extractors import SeleniumExtractor, RequestsExtractor
 
 
+def call_extractor(mode):
+    if mode == "selenium":
+        extractor = SeleniumExtractor()
+    elif mode == "requests":
+        extractor = RequestsExtractor()
+    return extractor
+
+
 class NewspapersParser(BaseParser):
 
     def __init__(self, parser, mode="selenium"):
@@ -11,17 +19,11 @@ class NewspapersParser(BaseParser):
         super().__init__()
 
     def call_extractor(self):
-        if self.RMODE == "selenium":
-            self.extractor = SeleniumExtractor(
-                executable_path=self.BASE_DRIVER
-            )
-        elif self.RMODE == "requests":
-            self.extractor = RequestsExtractor()
+        self.extractor = call_extractor(self.RMODE)
 
     def parse(self, url):
         self.article = Article(url)
         self.soup = self.get_soup(url)
-        self.cfg = self.get_config()
         super().parse(url)
 
         return self.article
@@ -29,8 +31,9 @@ class NewspapersParser(BaseParser):
 
 class AutoCrawlParser(BaseParser):
 
-    def __init__(self):
-        pass
+    def __init__(self, mode="selenium"):
+        self.RMODE = mode
+        super().__init__()
 
-    def __str__(self):
-        pass
+    def call_extractor(self):
+        self.extractor = call_extractor(self.RMODE)

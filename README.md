@@ -67,6 +67,7 @@ Features
     - Selenium
     - Requests
     - beautifulsoup4
+    - lxml
 
 ### Command
 
