@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from lxml import html
 import requests
 
-from .cleaners import remove_multiple_space
+from .cleaners import remove_multiple_space, remove_html_tags
 from .utils import download_driver
 from .log import get_logger
 
@@ -56,7 +56,10 @@ class BaseExtractor(object):
 
     def get_xpath_tree(self, url):
         try:
-            tree = html.fromstring(self.get_content(url))
+            # remove script, stype text from js code
+            soup = self.get_soup(url)
+            soup = remove_html_tags(soup)
+            tree = html.fromstring(soup.get_text())
             return tree
         except Exception as e:
             logger.exception(e)
@@ -94,9 +97,9 @@ class BaseParser(object):
             self.check_driver()
         self.call_extractor()
 
-    def load_config(self):
+    def load_config(self, fpath="config.yaml"):
         self.BASE_CONFIG = os.path.join(
-            os.path.dirname(__file__), "config.yaml")
+            os.path.dirname(__file__), fpath)
 
         with open(self.BASE_CONFIG) as f:
             self.cfg = yaml.load(f)
@@ -120,29 +123,46 @@ class BaseParser(object):
 
     def get_links_by_tag(self,
                          tree,
-                         attr,
-                         val,
+                         attrs,
+                         vals,
                          src_attrs,
                          name="*",
-                         fmt="//{}[@{}='{}']/@{}"):
+                         fmt="//{}[contains(@{}, '{}')]//@{}"):
         matches = []
-        for src_attr in src_attrs:
-            xpath_seq = fmt.format(name, attr, val, src_attr)
-            res = tree.xpath(xpath_seq)
-            matches.extend(res)
+        for attr in attrs:
+            for val in vals:
+                for src_attr in src_attrs:
+                    xpath_seq = fmt.format(name, attr, val, src_attr)
+                    print(xpath_seq)
+                    res = tree.xpath(xpath_seq)
+                    matches.extend(res)
+
         return matches
 
     def get_element_by_tag(self,
                            tree,
-                           name,
                            attr,
                            val,
+                           name,
                            get_text=True,
-                           fmt="//{}[@{}='{}']{}"):
+                           fmt="//{}[contains(@{}, '{}')]{}"):
+        """
+        "//*[@class='abc']"
+        "//*[@class='abc']/text()"
+        "//ABC[@class='abc']"
+        "//ABC[@class='abc']/text()"
+        """
         if get_text:
-            text = "/text()"
+            text = "//text()"
+        else:
+            text = ""
+
+        if name == "*" and (attr is None or val is None):
+            return []
+
         xpath_seq = fmt.format(name, attr, val, text)
         res = tree.xpath(xpath_seq)
+        res = self.remove_empty_val(res)
         return res
 
     def get_elements_by_tag(self,
@@ -151,22 +171,32 @@ class BaseParser(object):
                             vals,
                             names=["*"],
                             get_text=True,
-                            all_=True):
+                            join=False):
         matches = []
-        if all_:
-            names = "*"
         for name in names:
             for attr in attrs:
                 for val in vals:
                     found = self.get_element_by_tag(
-                        tree, name, attr=attr,
-                        val=val, get_text=True
+                        tree, attr=attr, val=val,
+                        name=name, get_text=True
                     )
                     matches.extend(found)
 
+        if join:
+            return " ".join(matches)
         return matches
 
     def exclude_content(self, elements):
+        pass
+
+    def remove_empty_val(self, vals):
+        return [val for val in vals if len(val.strip()) > 0]
+
+    def check_datetime_fmt(self, dt):
+        """
+        TODO: check if string is in datetime format
+        https://stackoverflow.com/a/16870699
+        """
         pass
 
     def extract_nest_elements(self, elements):
@@ -199,7 +229,7 @@ class BaseParser(object):
         # title::text
         self.article.title = self.get_strs(**cfg["title"])
 
-        # author::text
+        # authors::text
         self.article.authors = self.get_strs(**cfg["authors"])
 
         # text::text
@@ -213,6 +243,9 @@ class BaseParser(object):
 
         # image_urls::links
         self.article.image_urls = self.get_links(**cfg["image_urls"])
+
+    def auto_parse(self, url):
+        pass
 
 
 class BaseExporter(object):

@@ -2,28 +2,78 @@ links:
   - src
   - data-src
 
-authors:
+title:
   name:
+    - 
     - h1
   attrs:
-    - name
-    - rel
-    - itemprop
+    -
     - class
     - id  
   vals:
+    -
     - details__headline
-    - author
-    - byline
-    - dc.creator
-    - byl
 
-image_url:
+authors:
   name:
+    -
+  attrs:
+    -
+    - class
+    - id  
+  vals:
+    -
+    - details__author__meta
+
+text:
+  name:
+    -
+    - h1
+  attrs:
+    - 
+    - class
+    - id  
+  vals:
+    -
+    - detail-content
+    - details__content
+
+pubd:
+  name:
+    -
+  attrs:
+    -
+    - class
+    - id  
+  vals:
+    -
+    - details__meta
+
+tags:
+  name:
+    -
+  attrs:
+    -
+    - class
+    - id  
+  vals:
+    -
+    - details__tags
+
+image_urls:
+  name:
+    -
     - a
   attrs:
-    - src
-    - data-src
+    -
+    - class
+    - id
     - itemprop
   vals:
+    -
+    - image
     - contentUrl
+  src_attrs:
+    -
+    - src
+    - data-src
