@@ -2,6 +2,7 @@ import os
 import yaml
 from multiprocessing import Pool, cpu_count
 from time import time
+import string
 
 from bs4 import BeautifulSoup
 from lxml import html
@@ -40,10 +41,10 @@ class BaseExtractor(object):
         try:
             if self.RMODE == "selenium":
                 self.driver.get(url)
-                return self.driver.page_source
+                return self.driver.page_source  # html
             elif self.RMODE == "requests":
                 req = requests.get(url)
-                return req.text
+                return req.text  # html
         except Exception as e:
             logger.exception(e)
 
@@ -58,8 +59,8 @@ class BaseExtractor(object):
         try:
             # remove script, stype text from js code
             soup = self.get_soup(url)
-            soup = remove_html_tags(soup)
-            tree = html.fromstring(soup.get_text())
+            soup = remove_html_tags(soup, get_text=False)
+            tree = html.fromstring(str(soup))  # str(soup)::html
             return tree
         except Exception as e:
             logger.exception(e)
@@ -121,21 +122,38 @@ class BaseParser(object):
     def get_content(self, url):
         return self.extractor.get_content(url)
 
+    def count_objs(self, tree, xpath_seq):
+        xpath_seq = "count({})".format(xpath_seq)
+        count = tree.xpath(xpath_seq)
+        return int(count)
+
+    def get_trans(self,
+                  ele,
+                  from_=string.ascii_uppercase,
+                  to_=string.ascii_lowercase,
+                  fmt_trans="translate(@{}, '{}', '{}')"):
+        return fmt_trans.format(ele, from_, to_)
+
     def get_links_by_tag(self,
                          tree,
                          attrs,
                          vals,
                          src_attrs,
-                         name="*",
+                         names=["*"],
                          fmt="//{}[contains(@{}, '{}')]//@{}"):
         matches = []
-        for attr in attrs:
-            for val in vals:
-                for src_attr in src_attrs:
-                    xpath_seq = fmt.format(name, attr, val, src_attr)
-                    print(xpath_seq)
-                    res = tree.xpath(xpath_seq)
-                    matches.extend(res)
+        for name in names:
+            if name is None:
+                name = "*"
+            for attr in attrs:
+                for val in vals:
+                    for src_attr in src_attrs:
+                        if None in (attr, val, src_attr):
+                            continue
+                        xpath_seq = fmt.format(name, attr, val, src_attr)
+                        print("link: {}".format(xpath_seq))
+                        res = tree.xpath(xpath_seq)
+                        matches.extend(res)
 
         return matches
 
@@ -145,25 +163,43 @@ class BaseParser(object):
                            val,
                            name,
                            get_text=True,
-                           fmt="//{}[contains(@{}, '{}')]{}"):
+                           fmt="//{}[contains({}, '{}')]{}"):
         """
         "//*[@class='abc']"
         "//*[@class='abc']/text()"
         "//ABC[@class='abc']"
         "//ABC[@class='abc']/text()"
+
+        old_fmt::"//{}[contains(@{}, '{}')]{}"
+
+        TODO:
+            - filter duplicate elements
+            - title: select first element
+            - text: filter duplicate content
         """
         if get_text:
             text = "//text()"
         else:
             text = ""
 
-        if name == "*" and (attr is None or val is None):
-            return []
-
-        xpath_seq = fmt.format(name, attr, val, text)
+        if name != "*" and attr is None and val is None:
+            xpath_seq = "//{}{}".format(name, text)
+        elif name == "*" and None in (attr, val):
+            return None
+        elif None in (attr, val):
+            return None
+        else:
+            attr = self.get_trans(attr)
+            xpath_seq = fmt.format(name, attr, val, text)
+        print(xpath_seq)
+        count = self.count_objs(tree, xpath_seq)
+        print(count)
         res = tree.xpath(xpath_seq)
         res = self.remove_empty_val(res)
         return res
+
+    def filter_content(self, ):
+        pass
 
     def get_elements_by_tag(self,
                             tree,
@@ -172,15 +208,24 @@ class BaseParser(object):
                             names=["*"],
                             get_text=True,
                             join=False):
+        """
+        name - attr - val
+        A B C //text()
+        * B C //text()
+        A * * //text()
+        """
         matches = []
         for name in names:
+            if name is None:
+                name = "*"
             for attr in attrs:
                 for val in vals:
                     found = self.get_element_by_tag(
                         tree, attr=attr, val=val,
                         name=name, get_text=True
                     )
-                    matches.extend(found)
+                    if found:
+                        matches.extend(found)
 
         if join:
             return " ".join(matches)

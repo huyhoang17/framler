@@ -12,7 +12,7 @@ title:
     - id  
   vals:
     -
-    - details__headline
+    - headline
 
 authors:
   name:
@@ -23,31 +23,32 @@ authors:
     - id  
   vals:
     -
-    - details__author__meta
+    - author
 
 text:
   name:
     -
-    - h1
   attrs:
     - 
     - class
-    - id  
+    - id
   vals:
     -
-    - detail-content
-    - details__content
+    - content
+    - body
 
 pubd:
   name:
-    -
+    - 
   attrs:
     -
     - class
     - id  
   vals:
     -
-    - details__meta
+    - date
+    - timer
+    - meta
 
 tags:
   name:
@@ -58,12 +59,11 @@ tags:
     - id  
   vals:
     -
-    - details__tags
+    - tag
 
 image_urls:
   name:
     -
-    - a
   attrs:
     -
     - class
@@ -72,7 +72,9 @@ image_urls:
   vals:
     -
     - image
-    - contentUrl
+    - img
+    - url
+    - picture
   src_attrs:
     -
     - src

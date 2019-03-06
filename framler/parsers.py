@@ -65,38 +65,44 @@ class AutoCrawlParser(BaseParser):
         # title::text
         article.title = self.get_elements_by_tag(
             tree, cfg["title"]["attrs"],
-            cfg["title"]["vals"]
+            cfg["title"]["vals"],
+            cfg["title"]["name"]
         )
 
         # authors::text
         article.authors = self.get_elements_by_tag(
             tree, cfg["authors"]["attrs"],
-            cfg["authors"]["vals"]
+            cfg["authors"]["vals"],
+            cfg["authors"]["name"]
         )
 
         # text::text
-        article.text = self.get_elements_by_tag(
+        article.text = " ".join(self.get_elements_by_tag(
             tree, cfg["text"]["attrs"],
-            cfg["text"]["vals"]
-        )
+            cfg["text"]["vals"],
+            cfg["text"]["name"]
+        ))
 
         # published_date::text
-        article.published_date = self.get_elements_by_tag(
+        article.published_date = " ".join(self.get_elements_by_tag(
             tree, cfg["pubd"]["attrs"],
-            cfg["pubd"]["vals"]
-        )
+            cfg["pubd"]["vals"],
+            cfg["pubd"]["name"]
+        ))
 
         # tags::text
         article.tags = self.get_elements_by_tag(
             tree, cfg["tags"]["attrs"],
-            cfg["tags"]["vals"]
+            cfg["tags"]["vals"],
+            cfg["tags"]["name"]
         )
 
         # image_urls::links
         article.image_urls = self.get_links_by_tag(
             tree, cfg["image_urls"]["attrs"],
             cfg["image_urls"]["vals"],
-            cfg["image_urls"]["src_attrs"]
+            cfg["image_urls"]["src_attrs"],
+            cfg["image_urls"]["name"]
         )
 
         return article
