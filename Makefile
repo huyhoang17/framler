@@ -53,6 +53,9 @@ clean-test: ## remove test and coverage artifacts
 lint: ## check style with flake8
 	flake8 framler tests
 
+flake:
+	flake8 . --max-line-length=100 --exclude .tox,.env,.eggs,docs
+
 test: ## run tests quickly with the default Python
 	py.test
 

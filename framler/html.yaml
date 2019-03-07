@@ -1,0 +1,78 @@
+title:
+  name:
+    - 
+    - h1
+  attrs:
+    -
+    - class
+    - id  
+  vals:
+    -
+    - headline
+
+authors:
+  name:
+    -
+  attrs:
+    -
+    - class
+    - id  
+  vals:
+    -
+    - author
+
+text:
+  name:
+    -
+  attrs:
+    - 
+    - class
+    - id
+  vals:
+    -
+    - content
+    - body
+
+pubd:
+  name:
+    - 
+  attrs:
+    -
+    - class
+    - id  
+  vals:
+    -
+    - date
+    - timer
+    - meta
+
+tags:
+  name:
+    -
+  attrs:
+    -
+    - class
+    - id  
+  vals:
+    -
+    - tag
+    - keyword
+
+image_urls:
+  name:
+    -
+  attrs:
+    -
+    - class
+    - id
+    - itemprop
+  vals:
+    -
+    - image
+    - img
+    - url
+    - picture
+  src_attrs:
+    -
+    - src
+    - data-src

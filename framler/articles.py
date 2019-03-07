@@ -12,7 +12,6 @@ class Article:
         self.text = ""
         self.authors = []
         self.published_date = ""
-        self.top_image_url = ""
         self.image_urls = []
         self.tags = []
 

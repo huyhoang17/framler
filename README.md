@@ -48,11 +48,10 @@ Features
     - .... 
 
 - Additional features:
-    - Export data to file, database (csv, mongo, ....)
+    - Export data (text, image) to file, database (csv, mongo, ....)
     - Multiprocessing
     - Render and crawl website contains Js
     - Define base solution to extract main information from website (title, text, author, published_data, ....)
-    - ....
 
 - Folder structure
 ```
@@ -67,6 +66,7 @@ Features
     - Selenium
     - Requests
     - beautifulsoup4
+    - lxml
 
 ### Command
 
@@ -129,7 +129,7 @@ Out[10]: 'Anh Vũ ngovutb@gmail.com'
 Reference
 ---------
 
-Based on newspaper's API library: https://github.com/codelucas/newspaper
+Based on newspaper's API library: https://github.com/codelucas/newspaper and AutoCrawler library: https://github.com/YoongiKim/AutoCrawler
 
 Credits
 -------

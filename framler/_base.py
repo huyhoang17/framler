@@ -1,13 +1,14 @@
-# from abc import ABC, abstractmethod
 import os
 import yaml
 from multiprocessing import Pool, cpu_count
 from time import time
+import string
 
 from bs4 import BeautifulSoup
+from lxml import html
 import requests
 
-from .cleaners import remove_multiple_space
+from .cleaners import remove_multiple_space, remove_html_tags
 from .utils import download_driver
 from .log import get_logger
 
@@ -36,22 +37,31 @@ class BaseExtractor(object):
         self.PMODE = pmode
 
     def get_content(self, url):
-        print(url)
+        logger.info(url)
         try:
             if self.RMODE == "selenium":
                 self.driver.get(url)
-                return self.driver.page_source
+                # return self.driver.page_source  # html
             elif self.RMODE == "requests":
                 req = requests.get(url)
-                return req.text
+                return req.text  # html
         except Exception as e:
             logger.exception(e)
 
     def get_soup(self, url):
-
         try:
             soup = BeautifulSoup(self.get_content(url), self.PMODE)
             return soup
+        except Exception as e:
+            logger.exception(e)
+
+    def get_xpath_tree(self, url):
+        try:
+            # remove script, stype text from js code
+            soup = self.get_soup(url)
+            soup = remove_html_tags(soup, get_text=False)
+            tree = html.fromstring(str(soup))  # str(soup)::html
+            return tree
         except Exception as e:
             logger.exception(e)
 
@@ -66,12 +76,12 @@ class BaseExtractor(object):
         else:
             logger.warning("Can not fetch data from: %s", url)
 
-    def run_processes(self, samples):
+    def run_processes(self, urls):
         logger.info("Number of cpu: %s", cpu_count())
 
         start_time = time()
         p = Pool(cpu_count() - 1)
-        p.map(self.get_content, samples)
+        p.map(self.get_content, urls)
         p.close()
         p.join()
         end_time = time()
@@ -84,12 +94,13 @@ class BaseParser(object):
 
     def __init__(self):
         self.load_config()
-        self.check_driver()
-        self.call_extractor(self.mode)
+        if self.RMODE == "selenium":
+            self.check_driver()
+        self.call_extractor()
 
-    def load_config(self):
+    def load_config(self, fpath="config.yaml"):
         self.BASE_CONFIG = os.path.join(
-            os.path.dirname(__file__), "config.yaml")
+            os.path.dirname(__file__), fpath)
 
         with open(self.BASE_CONFIG) as f:
             self.cfg = yaml.load(f)
@@ -105,58 +116,198 @@ class BaseParser(object):
             logger.info("Downloading firefox selenium driver ....")
             download_driver()
 
-    def get_config(self):
-        return self.cfg["site"][self.PARSER]
+    def call_extractor(self):
+        pass
 
     def get_content(self, url):
         return self.extractor.get_content(url)
 
+    def count_objs(self, tree, xpath_seq):
+        xpath_seq = "count({})".format(xpath_seq)
+        count = tree.xpath(xpath_seq)
+        return int(count)
+
+    def get_trans(self,
+                  ele,
+                  from_=string.ascii_uppercase,
+                  to_=string.ascii_lowercase,
+                  fmt_trans="translate(@{}, '{}', '{}')"):
+        return fmt_trans.format(ele, from_, to_)
+
+    def get_links_by_tag(self,
+                         tree,
+                         attrs,
+                         vals,
+                         src_attrs,
+                         names=["*"],
+                         fmt="//{}[contains(@{}, '{}')]//@{}"):
+        """
+        TODO:
+            - filter links
+        """
+        matches = []
+        for name in names:
+            if name is None:
+                name = "*"
+            for attr in attrs:
+                for val in vals:
+                    for src_attr in src_attrs:
+                        if None in (attr, val, src_attr):
+                            continue
+                        xpath_seq = fmt.format(name, attr, val, src_attr)
+                        print("link: {}".format(xpath_seq))
+                        res = tree.xpath(xpath_seq)
+                        matches.extend(res)
+
+        return matches
+
+    def filter_links(self, links):
+        pass
+
+    def get_element_by_tag(self,
+                           tree,
+                           attr,
+                           val,
+                           name,
+                           get_text=True,
+                           fmt="//{}[contains({}, '{}')]{}"):
+        """
+        "//*[@class='abc']"
+        "//*[@class='abc']/text()"
+        "//ABC[@class='abc']"
+        "//ABC[@class='abc']/text()"
+
+        old_fmt::"//{}[contains(@{}, '{}')]{}"
+
+        TODO:
+            - filter duplicate elements
+            - title: select first element
+            - text: filter duplicate content
+        """
+        if get_text:
+            text = "//text()"
+        else:
+            text = ""
+
+        if name != "*" and attr is None and val is None:
+            xpath_seq = "//{}{}".format(name, text)
+        elif name == "*" and None in (attr, val):
+            return None
+        elif None in (attr, val):
+            return None
+        else:
+            attr = self.get_trans(attr)
+            xpath_seq = fmt.format(name, attr, val, text)
+        print(xpath_seq)
+        count = self.count_objs(tree, xpath_seq)
+        print(count)
+        res = tree.xpath(xpath_seq)
+        res = self.remove_empty_val(res)
+        return res
+
+    def simplify(self, text):
+        return remove_multiple_space(text).strip()
+
+    def filter_content(self, sents, join=True):
+        sents = [sent for sent in sents if self.simplify(sent)]
+
+        result = []
+        for sent in sents:
+            if sent not in result:
+                result.append(sent)
+
+        if join:
+            return self.simplify(" ".join(result))
+
+        return result
+
+    def get_elements_by_tag(self,
+                            tree,
+                            attrs,
+                            vals,
+                            names=["*"],
+                            get_text=True,
+                            join=False):
+        """
+        name - attr - val
+        A B C //text()
+        * B C //text()
+        A * * //text()
+        """
+        matches = []
+        for name in names:
+            if name is None:
+                name = "*"
+            for attr in attrs:
+                for val in vals:
+                    found = self.get_element_by_tag(
+                        tree, attr=attr, val=val,
+                        name=name, get_text=True
+                    )
+                    if found:
+                        matches.extend(found)
+
+        if join:
+            return " ".join(matches)
+        return matches
+
     def exclude_content(self, elements):
+        pass
+
+    def remove_empty_val(self, vals):
+        return [val for val in vals if len(val.strip()) > 0]
+
+    def check_datetime_fmt(self, dt):
+        """
+        TODO: check if string is in datetime format
+        https://stackoverflow.com/a/16870699
+        """
         pass
 
     def extract_nest_elements(self, elements):
         pass
 
+    def extract_content_sub_elements(self, elements):
+        pass
+
     def get_soup(self, url):
         return self.extractor.get_soup(url)
 
-    def get_strs(self, **kwargs):
+    def get_xpath_tree(self, url):
+        return self.extractor.get_xpath_tree(url)
+
+    def get_strs(self, soup, **kwargs):
         return remove_multiple_space(' '.join(
-            [s.get_text() for s in self.soup.find_all(**kwargs)])
+            [s.get_text() for s in soup.find_all(**kwargs)])
         ).strip()
 
-    def get_links(self, **kwargs):
-        return [img.img["src"] for img in self.soup.find_all(**kwargs)]
+    def get_links(self, soup, **kwargs):
+        return [img.img["src"] for img in soup.find_all(**kwargs)]
 
-    def call_extractor(self, mode):
-        pass
+    def run_processes(self, urls, no_cpus=None):
+        result = []
+        logger.info("Number of cpu: %s", cpu_count())
 
-    def parse(self, url, mode="selenium"):
+        start_time = time()
+        no_cpus = no_cpus if no_cpus is not None else cpu_count() - 1
 
-        # URL
-        self.article.url = url
+        p = Pool(no_cpus)
+        try:
+            result = p.map(self.auto_parse, urls)
+        except AttributeError:
+            result = p.map(self.parse, urls)
+        # for url in urls:
+        #     result.append(p.apply_async(self.auto_parse, (url,)).get())
 
-        # title::text
-        self.article.title = self.get_strs(**self.cfg["title"])
+        p.close()
+        p.join()
+        end_time = time()
 
-        # author::text
-        self.article.author = self.get_strs(**self.cfg["author"])
+        elapsed_time = str(end_time - start_time)
+        logger.info("Elapsed run time: %s seconds", elapsed_time)
+        logger.info("Task ended. Pool join!")
 
-        # text::text
-        self.article.text = self.get_strs(**self.cfg["text"])
-
-        # published_date::text
-        self.article.published_date = self.get_strs(**self.cfg["pubd"])
-
-        # tags::text
-        self.article.tags = self.get_strs(**self.cfg["tags"])
-
-        # image_urls::links
-        self.article.image_urls = self.get_links(**self.cfg["image_urls"])
-
-        # top image
-        # self.article.top_image_url = \
-        #     self.get_strs(**self.cfg["top_image_url"])
+        return result
 
 
 class BaseExporter(object):
