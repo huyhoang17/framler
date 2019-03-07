@@ -48,11 +48,10 @@ Features
     - .... 
 
 - Additional features:
-    - Export data to file, database (csv, mongo, ....)
+    - Export data (text, image) to file, database (csv, mongo, ....)
     - Multiprocessing
     - Render and crawl website contains Js
     - Define base solution to extract main information from website (title, text, author, published_data, ....)
-    - ....
 
 - Folder structure
 ```

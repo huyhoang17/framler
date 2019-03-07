@@ -41,7 +41,7 @@ class BaseExtractor(object):
         try:
             if self.RMODE == "selenium":
                 self.driver.get(url)
-                return self.driver.page_source  # html
+                # return self.driver.page_source  # html
             elif self.RMODE == "requests":
                 req = requests.get(url)
                 return req.text  # html
@@ -76,12 +76,12 @@ class BaseExtractor(object):
         else:
             logger.warning("Can not fetch data from: %s", url)
 
-    def run_processes(self, samples):
+    def run_processes(self, urls):
         logger.info("Number of cpu: %s", cpu_count())
 
         start_time = time()
         p = Pool(cpu_count() - 1)
-        p.map(self.get_content, samples)
+        p.map(self.get_content, urls)
         p.close()
         p.join()
         end_time = time()
@@ -276,41 +276,38 @@ class BaseParser(object):
     def get_xpath_tree(self, url):
         return self.extractor.get_xpath_tree(url)
 
-    def get_strs(self, **kwargs):
+    def get_strs(self, soup, **kwargs):
         return remove_multiple_space(' '.join(
-            [s.get_text() for s in self.soup.find_all(**kwargs)])
+            [s.get_text() for s in soup.find_all(**kwargs)])
         ).strip()
 
-    def get_links(self, **kwargs):
-        return [img.img["src"] for img in self.soup.find_all(**kwargs)]
+    def get_links(self, soup, **kwargs):
+        return [img.img["src"] for img in soup.find_all(**kwargs)]
 
-    def parse(self, url):
+    def run_processes(self, urls, no_cpus=None):
+        result = []
+        logger.info("Number of cpu: %s", cpu_count())
 
-        cfg = self.cfg["site"][self.PARSER]
+        start_time = time()
+        no_cpus = no_cpus if no_cpus is not None else cpu_count() - 1
 
-        # URL
-        self.article.url = url
+        p = Pool(no_cpus)
+        try:
+            result = p.map(self.auto_parse, urls)
+        except AttributeError:
+            result = p.map(self.parse, urls)
+        # for url in urls:
+        #     result.append(p.apply_async(self.auto_parse, (url,)).get())
 
-        # title::text
-        self.article.title = self.get_strs(**cfg["title"])
+        p.close()
+        p.join()
+        end_time = time()
 
-        # authors::text
-        self.article.authors = self.get_strs(**cfg["authors"])
+        elapsed_time = str(end_time - start_time)
+        logger.info("Elapsed run time: %s seconds", elapsed_time)
+        logger.info("Task ended. Pool join!")
 
-        # text::text
-        self.article.text = self.get_strs(**cfg["text"])
-
-        # published_date::text
-        self.article.published_date = self.get_strs(**cfg["pubd"])
-
-        # tags::text
-        self.article.tags = self.get_strs(**cfg["tags"])
-
-        # image_urls::links
-        self.article.image_urls = self.get_links(**cfg["image_urls"])
-
-    def auto_parse(self, url):
-        pass
+        return result
 
 
 class BaseExporter(object):

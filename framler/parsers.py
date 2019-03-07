@@ -1,9 +1,13 @@
+import os
+import yaml
+from urllib.parse import urlsplit
+
 from ._base import BaseParser
 from .articles import Article
 from .extractors import SeleniumExtractor, RequestsExtractor
+from .log import get_logger
 
-import os
-import yaml
+logger = get_logger(__name__)
 
 
 def call_extractor(mode):
@@ -16,7 +20,7 @@ def call_extractor(mode):
 
 class NewspapersParser(BaseParser):
 
-    def __init__(self, parser, mode="selenium"):
+    def __init__(self, parser, mode="requests"):
         self.PARSER = parser
         self.RMODE = mode
         super().__init__()
@@ -24,18 +28,49 @@ class NewspapersParser(BaseParser):
     def call_extractor(self):
         self.extractor = call_extractor(self.RMODE)
 
-    def parse(self, url):
-        # TODO: change API
-        self.article = Article(url)
-        self.soup = self.get_soup(url)
-        super().parse(url)
+    def check_valid_url(self, url):
+        base_url = "{0.scheme}://{0.netloc}/".format(urlsplit(url))
+        return self.PARSER in base_url
 
-        return self.article
+    def parse(self, url):
+
+        assert self.check_valid_url(url), \
+            "Invalid url for '{}' parser".format(self.PARSER)
+
+        article = Article(url)
+        soup = self.get_soup(url)
+        try:
+            cfg = self.cfg["site"][self.PARSER]
+        except KeyError:
+            raise NotImplementedError("Invalid parser")
+
+        # URL
+        article.url = url
+
+        # title::text
+        article.title = self.get_strs(soup, **cfg["title"])
+
+        # authors::text
+        article.authors = self.get_strs(soup, **cfg["authors"])
+
+        # text::text
+        article.text = self.get_strs(soup, **cfg["text"])
+
+        # published_date::text
+        article.published_date = self.get_strs(soup, **cfg["pubd"])
+
+        # tags::text
+        article.tags = self.get_strs(soup, **cfg["tags"])
+
+        # image_urls::links
+        article.image_urls = self.get_links(soup, **cfg["image_urls"])
+
+        return article
 
 
 class AutoCrawlParser(BaseParser):
 
-    def __init__(self, mode="selenium"):
+    def __init__(self, mode="requests"):
         self.RMODE = mode
         super().__init__()
 
