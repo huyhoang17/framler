@@ -50,8 +50,35 @@ class AutoCrawlParser(BaseParser):
         with open(self.BASE_CONFIG) as f:
             self.auto_cfg = yaml.load(f)
 
-    def parse_tag(self, tree, tag_name, link=False):
+    def parse_tag(self, tree, filter_, **kwargs):
+        # arc_attrs::to get links, not text
+        src_attrs = kwargs.get("src_attrs", None)
+
+        attrs = kwargs.get("attrs", None)
+        vals = kwargs.get("vals", None)
+        name = kwargs.get("name", None)
+
+        if src_attrs is not None:
+            result = self.get_links_by_tag(
+                tree, attrs, vals, src_attrs, name
+            )
+        else:
+            result = self.get_elements_by_tag(
+                tree, attrs, vals, name
+            )
+
+        if filter_:
+            result = self.filter_content(result)
+
+        return result
+
+    # START::main method
+    def get_auto_text(self, text):
         pass
+
+    def get_auto_title(self, title):
+        pass
+    # END::main method
 
     def auto_parse(self, url):
 
@@ -63,46 +90,20 @@ class AutoCrawlParser(BaseParser):
         article.url = url
 
         # title::text
-        article.title = self.get_elements_by_tag(
-            tree, cfg["title"]["attrs"],
-            cfg["title"]["vals"],
-            cfg["title"]["name"]
-        )
+        article.title = self.parse_tag(tree, True, **cfg["title"])
 
         # authors::text
-        article.authors = self.get_elements_by_tag(
-            tree, cfg["authors"]["attrs"],
-            cfg["authors"]["vals"],
-            cfg["authors"]["name"]
-        )
+        article.authors = self.parse_tag(tree, False, **cfg["authors"])
 
         # text::text
-        article.text = " ".join(self.get_elements_by_tag(
-            tree, cfg["text"]["attrs"],
-            cfg["text"]["vals"],
-            cfg["text"]["name"]
-        ))
+        article.text = self.parse_tag(tree, True, **cfg["text"])
 
         # published_date::text
-        article.published_date = " ".join(self.get_elements_by_tag(
-            tree, cfg["pubd"]["attrs"],
-            cfg["pubd"]["vals"],
-            cfg["pubd"]["name"]
-        ))
+        article.published_date = self.parse_tag(tree, True, **cfg["pubd"])
 
         # tags::text
-        article.tags = self.get_elements_by_tag(
-            tree, cfg["tags"]["attrs"],
-            cfg["tags"]["vals"],
-            cfg["tags"]["name"]
-        )
+        article.tags = self.parse_tag(tree, False, **cfg["tags"])
 
         # image_urls::links
-        article.image_urls = self.get_links_by_tag(
-            tree, cfg["image_urls"]["attrs"],
-            cfg["image_urls"]["vals"],
-            cfg["image_urls"]["src_attrs"],
-            cfg["image_urls"]["name"]
-        )
-
+        article.image_urls = self.parse_tag(tree, False, **cfg["image_urls"])
         return article

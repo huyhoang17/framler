@@ -130,7 +130,7 @@ Out[10]: 'Anh Vũ ngovutb@gmail.com'
 Reference
 ---------
 
-Based on newspaper's API library: https://github.com/codelucas/newspaper
+Based on newspaper's API library: https://github.com/codelucas/newspaper and AutoCrawler library: https://github.com/YoongiKim/AutoCrawler
 
 Credits
 -------

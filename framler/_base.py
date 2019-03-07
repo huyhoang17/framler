@@ -141,6 +141,10 @@ class BaseParser(object):
                          src_attrs,
                          names=["*"],
                          fmt="//{}[contains(@{}, '{}')]//@{}"):
+        """
+        TODO:
+            - filter links
+        """
         matches = []
         for name in names:
             if name is None:
@@ -156,6 +160,9 @@ class BaseParser(object):
                         matches.extend(res)
 
         return matches
+
+    def filter_links(self, links):
+        pass
 
     def get_element_by_tag(self,
                            tree,
@@ -198,8 +205,21 @@ class BaseParser(object):
         res = self.remove_empty_val(res)
         return res
 
-    def filter_content(self, ):
-        pass
+    def simplify(self, text):
+        return remove_multiple_space(text).strip()
+
+    def filter_content(self, sents, join=True):
+        sents = [sent for sent in sents if self.simplify(sent)]
+
+        result = []
+        for sent in sents:
+            if sent not in result:
+                result.append(sent)
+
+        if join:
+            return self.simplify(" ".join(result))
+
+        return result
 
     def get_elements_by_tag(self,
                             tree,

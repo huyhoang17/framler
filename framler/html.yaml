@@ -60,6 +60,7 @@ tags:
   vals:
     -
     - tag
+    - keyword
 
 image_urls:
   name:
