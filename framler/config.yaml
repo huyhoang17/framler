@@ -79,3 +79,36 @@ site:
     image_urls:
       name: "a"
       itemprop: "contentUrl"
+
+  cafebiz:
+    title:
+      name: "h1"
+      class_: "title"
+    authors:
+      class_: "detail-author"
+    text:
+      class_: "detail-content"
+    pubd:
+      class_: "timeandcatdetail"
+    tags:
+      class_: "tags"
+    image_urls:
+      name: "center"
+      itemprop: "src"
+
+  laodong:
+    title:
+      name: "h1"
+    authors:
+      name: "span"
+      class_: "author"
+    text:
+      class_: "articleCon"
+    pubd:
+      name: "time"
+      class_: "f-datetime"
+    tags:
+      name: "span"
+      class_: "keywords"
+    image_urls:
+      name: "a"

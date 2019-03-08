@@ -3,6 +3,7 @@ import yaml
 from multiprocessing import Pool, cpu_count
 from time import time
 import string
+from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup
 from lxml import html
@@ -36,12 +37,32 @@ class BaseExtractor(object):
     def set_pmode(self, pmode):
         self.PMODE = pmode
 
+    def get_netloc(self, url):
+        base_url = "{0.scheme}://{0.netloc}/".format(urlsplit(url))
+        return base_url
+
+    def get_roadmap(self, url):
+        logger.info("Checking roadmaps...")
+        roadmaps = [
+            "sitemap",
+            "sitemap.xml",
+            "sitemap_index.xml",
+            "rss.htm",
+            "rss.html",
+        ]
+        for roadmap in roadmaps:
+            url_roadmap = os.path.join(self.get_netloc(url), roadmap)
+            req = requests.get(url)
+            if req.ok:
+                return url_roadmap
+
+        return None
+
     def get_content(self, url):
-        logger.info(url)
         try:
             if self.RMODE == "selenium":
                 self.driver.get(url)
-                # return self.driver.page_source  # html
+                return self.driver.page_source  # html
             elif self.RMODE == "requests":
                 req = requests.get(url)
                 return req.text  # html
@@ -198,9 +219,9 @@ class BaseParser(object):
         else:
             attr = self.get_trans(attr)
             xpath_seq = fmt.format(name, attr, val, text)
-        print(xpath_seq)
-        count = self.count_objs(tree, xpath_seq)
-        print(count)
+        # print(xpath_seq)
+        # count = self.count_objs(tree, xpath_seq)
+        # print(count)
         res = tree.xpath(xpath_seq)
         res = self.remove_empty_val(res)
         return res
@@ -277,7 +298,7 @@ class BaseParser(object):
         return self.extractor.get_xpath_tree(url)
 
     def get_strs(self, soup, **kwargs):
-        return remove_multiple_space(' '.join(
+        return remove_multiple_space(" ".join(
             [s.get_text() for s in soup.find_all(**kwargs)])
         ).strip()
 

@@ -6,6 +6,11 @@ class FileExporter(BaseExporter):
         pass
 
 
+class JsonExporter(BaseExporter):
+    def __init__(self):
+        pass
+
+
 class DatabaseExporter(BaseExporter):
     def __init__(self):
         pass

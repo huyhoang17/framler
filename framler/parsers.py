@@ -86,6 +86,9 @@ class AutoCrawlParser(BaseParser):
             self.auto_cfg = yaml.load(f)
 
     def parse_tag(self, tree, filter_, **kwargs):
+        """
+        :param filter_: True if return string, False if return list elements
+        """
         # arc_attrs::to get links, not text
         src_attrs = kwargs.get("src_attrs", None)
 
