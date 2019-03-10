@@ -18,7 +18,7 @@ class SeleniumExtractor(BaseExtractor):
     BROWSER = "firefox"  # default
     RMODE = "selenium"
 
-    def __init__(self, timeout=10,
+    def __init__(self, timeout=30,
                  display_browser=False,
                  fast_load=False,
                  executable_path=None):
@@ -59,8 +59,8 @@ class SeleniumExtractor(BaseExtractor):
             executable_path=executable_path
         )
 
-        # self.driver.set_page_load_timeout(timeout)
-        # self.driver.implicitly_wait(timeout)
+        self.driver.set_page_load_timeout(timeout)
+        self.driver.implicitly_wait(timeout)
 
     def wait(self, url, wait=5):
 

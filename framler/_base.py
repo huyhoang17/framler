@@ -1,7 +1,7 @@
 import os
 import yaml
 from multiprocessing import Pool, cpu_count
-from time import time
+from time import time, sleep
 import string
 from urllib.parse import urlsplit
 
@@ -62,6 +62,7 @@ class BaseExtractor(object):
         try:
             if self.RMODE == "selenium":
                 self.driver.get(url)
+                sleep(3)
                 return self.driver.page_source  # html
             elif self.RMODE == "requests":
                 req = requests.get(url)
