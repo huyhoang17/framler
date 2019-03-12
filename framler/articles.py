@@ -25,7 +25,7 @@ class Article:
         self.keywords()
         self.summary()
 
-    def download(self, mode="selenium"):
+    def download(self, mode="requests"):
         '''
         Get raw content
         '''

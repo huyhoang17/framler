@@ -18,9 +18,9 @@ Python package for crawler data and extract main information
 Features
 --------
 
-### Package to crawl and extract main information for online newspapers
+### Package to crawl and extract main information for websites
 
-- Some online newspapers:
+- Some Vietnamese online newspapers:
     - Dan Tri: https://dantri.com.vn/
     - VnExpress: https://vnexpress.net/
     - vietnamnet: https://vietnamnet.vn/
@@ -31,35 +31,40 @@ Features
     - Zing: https://news.zing.vn/
     - .... 
 
-- Main information:
+- Main information to extract:
     - Url
     - Title
-    - Content
+    - Text (content)
     - Authors
     - Publish date
-    - Top image
-    - Images
+    - Image urls
     - Tags
-    - ....
 
 - Additional information:
-    - Extract keyword
-    - Summary content  
-    - .... 
+    - Extract keyword (TODO)
+    - Summary content  (TODO)
 
 - Additional features:
-    - Export data (text, image) to file, database (csv, mongo, ....)
+    - Export data (text, image) to file, database (csv, mongo, ....) (TODO)
     - Multiprocessing
-    - Render and crawl website contains Js
-    - Define base solution to extract main information from website (title, text, author, published_data, ....)
+    - Render and crawl website contains Js (TODO)
+    - Define base solution to extract main information from website (title, text, author, published_data, image_urls, tags)
+    - Auto extract roadmaps (rss, sitemap) of some common Vietnamese online newspapers. Support export data to database, multiprocessing (TODO)
+    - Add auto extract roadmap (rss, sitemap) mechanism (TODO)
+    - Add cronjob to automatically crawler specific websites, checking duplicate and export data to database (TODO)
 
 - Folder structure
 ```
+    ├── _base.py - base abstract class for extracting, parsing and exporting data
     ├── articles.py - contain article's meta information 
     ├── cleaners.py - base object to clean article's content, include: html, text, stopword, ...
     ├── extractors.py - base extractor to auto extract main information for any articles, must include: url, title, content, author
     ├── parsers.py - base class to define some short methods to extract information from html elements, ex: regex define; find element by tag, id, class, ...
-    └── utils.py - define some common and useful methods
+    ├── images.py - define common pattern to extract and download images
+    ├── logs.py - base logging module
+    ├── utils.py - define some common and useful methods
+    ├── config.yaml - define meta information for each field 
+    └── html.yaml - define some common values for specific tags
 ```
 
 - Some prerequisite libraries:
@@ -82,7 +87,7 @@ pip install --upgrade framler
 
 ### Usage
 
-- Supports
+- For Vietnamese online newspapers, support (a.k.a parser name):
     - dantri
     - vnexpress
     - vietnamnet

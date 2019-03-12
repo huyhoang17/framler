@@ -2,6 +2,13 @@ import string
 import re
 
 
+def clean_hashtags(text):
+    text = text.lower()
+    text = text.replace("#", "")
+    text = text.replace("@", "")
+    return text
+
+
 def remove_html_tags(soup,
                      tags=["script", "style"],
                      get_text=False):
@@ -57,6 +64,7 @@ def split_punctuation(text):
             new_text = "".join(temp_text).lower().strip()
             rtext.append(new_text)
             temp_text = []
+    rtext.append("".join(temp_text).lower().strip())
     return rtext
 
 

@@ -1,9 +1,20 @@
+<<<<<<< HEAD
+=======
+from collections import Counter
+from copy import deepcopy
+>>>>>>> develop
 import os
 import yaml
 from urllib.parse import urlsplit
 
+<<<<<<< HEAD
+=======
+import datefinder
+
+>>>>>>> develop
 from ._base import BaseParser
 from .articles import Article
+from .cleaners import clean_hashtags
 from .extractors import SeleniumExtractor, RequestsExtractor
 from .log import get_logger
 
@@ -39,6 +50,12 @@ class NewspapersParser(BaseParser):
 
         article = Article(url)
         soup = self.get_soup(url)
+<<<<<<< HEAD
+=======
+        if soup is None:
+            return
+
+>>>>>>> develop
         try:
             cfg = self.cfg["site"][self.PARSER]
         except KeyError:
@@ -85,13 +102,52 @@ class AutoCrawlParser(BaseParser):
         with open(self.BASE_CONFIG) as f:
             self.auto_cfg = yaml.load(f)
 
+<<<<<<< HEAD
     def parse_tag(self, tree, filter_, **kwargs):
+=======
+    # START::main method
+    def get_title(self, title):
+        return title
+
+    def get_text(self, text):
+        return text
+
+    def get_authors(self, authors):
+        if authors:
+            return authors[0]
+        return []
+
+    def get_pubd(self, seqs):
+        result = []
+        for seq in seqs:
+            matches = datefinder.find_dates(seq)
+            result.extend(list(matches))
+
+        if result:
+            result = str(Counter(result).most_common(1)[0][0]).split()[0]
+        else:
+            result = ""
+        return result
+
+    def get_tags(self, tags):
+        return [clean_hashtags(tag) for tag in tags]
+
+    def get_image_urls(self, image_urls):
+        return image_urls
+    # END::main method
+
+    def parse_tag(self, tree, filter_, **kwargs):
+        """
+        :param filter_: True if return string, False if return list elements
+        """
+>>>>>>> develop
         # arc_attrs::to get links, not text
         src_attrs = kwargs.get("src_attrs", None)
 
         attrs = kwargs.get("attrs", None)
         vals = kwargs.get("vals", None)
         name = kwargs.get("name", None)
+<<<<<<< HEAD
 
         if src_attrs is not None:
             result = self.get_links_by_tag(
@@ -101,12 +157,32 @@ class AutoCrawlParser(BaseParser):
             result = self.get_elements_by_tag(
                 tree, attrs, vals, name
             )
+=======
+        exc_vals = kwargs.get("exc_vals", None)
+
+        if exc_vals is not None:
+            temp_tree = deepcopy(tree)
+            temp_tree = self.exclude_content(temp_tree, attrs, exc_vals)
+            result = self.get_elements_by_tag(
+                temp_tree, attrs, vals, name
+            )
+        else:
+            if src_attrs is not None:
+                result = self.get_links_by_tag(
+                    tree, attrs, vals, src_attrs, name
+                )
+            else:
+                result = self.get_elements_by_tag(
+                    tree, attrs, vals, name
+                )
+>>>>>>> develop
 
         if filter_:
             result = self.filter_content(result)
 
         return result
 
+<<<<<<< HEAD
     # START::main method
     def get_auto_text(self, text):
         pass
@@ -141,4 +217,45 @@ class AutoCrawlParser(BaseParser):
 
         # image_urls::links
         article.image_urls = self.parse_tag(tree, False, **cfg["image_urls"])
+=======
+    def auto_parse(self, url):
+
+        cfg = self.auto_cfg
+        self.call_extractor()
+        tree = self.get_xpath_tree(url)
+        article = Article(url)
+
+        # URL
+        article.url = url
+
+        # title::text
+        article.title = self.get_title(
+            self.parse_tag(tree, True, **cfg["title"])
+        )
+
+        # authors::text
+        article.authors = self.get_authors(
+            self.parse_tag(tree, False, **cfg["authors"])
+        )
+
+        # text::text
+        article.text = self.get_text(
+            self.parse_tag(tree, True, **cfg["text"])
+        )
+
+        # published_date::text
+        article.published_date = self.get_pubd(
+            self.parse_tag(tree, False, **cfg["pubd"])
+        )
+
+        # tags::text
+        article.tags = self.get_tags(
+            self.parse_tag(tree, False, **cfg["tags"])
+        )
+
+        # image_urls::links
+        article.image_urls = self.get_image_urls(
+            self.parse_tag(tree, False, **cfg["image_urls"])
+        )
+>>>>>>> develop
         return article
