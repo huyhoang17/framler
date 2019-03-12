@@ -18,12 +18,16 @@ class SeleniumExtractor(BaseExtractor):
     BROWSER = "firefox"  # default
     RMODE = "selenium"
 
-    def __init__(self, timeout=30,
+    def __init__(self, timeout=300,
                  display_browser=False,
                  fast_load=False,
                  executable_path=None):
 
         self.cfg = load_config()["driver"]
+        self.timeout = timeout
+        self.display_browser = display_browser
+        self.fast_load = fast_load
+        self.executable_path = executable_path
 
         self.profile = webdriver.FirefoxProfile()
         self.options = Options()
@@ -32,7 +36,7 @@ class SeleniumExtractor(BaseExtractor):
         # Reference:
         # - https://github.com/hailoc12/docbao/blob/master/backend/lib/crawl.py
         # - https://www.programcreek.com/python/example/100025/selenium.webdriver.ChromeOptions  # noqa
-        if fast_load:
+        if self.fast_load:
             self.profile.set_preference('permissions.default.stylesheet', 2)
             # Disable images
             self.profile.set_preference('permissions.default.image', 2)
@@ -47,49 +51,26 @@ class SeleniumExtractor(BaseExtractor):
             self.profile.add_extension(extension=self.profile.exp)
 
         # Add path to your FirefoxDriver
-        if executable_path is None:
-            executable_path = os.path.join(
+        if self.executable_path is None:
+            self.executable_path = os.path.join(
                 os.path.expanduser('~'),
                 self.cfg["untar_folder"],
                 self.cfg["untar_fname"]
             )
-        logger.info("Executable path: %s", executable_path)
+        logger.info("Executable path: %s", self.executable_path)
         self.driver = webdriver.Firefox(
             options=self.options, firefox_profile=self.profile,
-            executable_path=executable_path
+            executable_path=self.executable_path
         )
 
-        self.driver.set_page_load_timeout(timeout)
-        self.driver.implicitly_wait(timeout)
+        self.driver.set_page_load_timeout(self.timeout)
+        self.driver.implicitly_wait(self.timeout)
 
-    def wait(self, url, wait=5):
-
-        self.driver.set_page_load_timeout(wait)
-        self.driver.implicitly_wait(wait)
-        try:
-            self.driver.get(url)
-            return True
-        except Exception as e:
-            logger.exception(e)
-            self._has_error = True
-            return False
-
-    def retry_connection(self,
-                         url,
-                         retry=3,
-                         timeout=30):
-        connection_attempts = 0
-        while connection_attempts < retry:
-            try:
-                self.driver.get(url)
-                self.driver.implicitly_wait(timeout)
-                return True
-            except Exception as e:
-                logger.exception(e)
-                logger.error("Error connecting to %s", url)
-                logger.error("Attempt #%s.", connection_attempts)
-                connection_attempts += 1
-        return False
+    def quit(self):
+        """
+        Terminate driver selenium
+        """
+        self.driver.quit()
 
 
 class RequestsExtractor(BaseExtractor):

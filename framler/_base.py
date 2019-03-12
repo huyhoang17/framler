@@ -7,9 +7,15 @@ from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup
 from lxml import html
+from selenium.common.exceptions import TimeoutException
 import requests
 
-from .cleaners import remove_multiple_space, remove_html_tags
+from .cleaners import (
+    remove_multiple_space,
+    remove_html_tags,
+    remove_all_html_tags,
+    remove_links_content
+)
 from .utils import download_driver
 from .log import get_logger
 
@@ -63,10 +69,15 @@ class BaseExtractor(object):
             if self.RMODE == "selenium":
                 self.driver.get(url)
                 sleep(3)
-                return self.driver.page_source  # html
+                text = self.driver.page_source  # html
+                # terminate driver
+                self.quit()
+                return text
             elif self.RMODE == "requests":
                 req = requests.get(url)
                 return req.text  # html
+        except TimeoutException:
+            return
         except Exception as e:
             logger.exception(e)
 
@@ -87,30 +98,6 @@ class BaseExtractor(object):
         except Exception as e:
             logger.exception(e)
 
-    def retry_connection(self, url, retry=3, timeout=30):
-        pass
-
-    def run_process(self, url):
-        if self.retry_connection(url):
-            html = self.get_content(url)
-            output_list = self.parse(url, html)
-            self.write_to_file(output_list)
-        else:
-            logger.warning("Can not fetch data from: %s", url)
-
-    def run_processes(self, urls):
-        logger.info("Number of cpu: %s", cpu_count())
-
-        start_time = time()
-        p = Pool(cpu_count() - 1)
-        p.map(self.get_content, urls)
-        p.close()
-        p.join()
-        end_time = time()
-
-        elapsed_time = str(end_time - start_time)
-        logger.info("Elapsed run time: %s seconds", elapsed_time)
-
 
 class BaseParser(object):
 
@@ -118,7 +105,7 @@ class BaseParser(object):
         self.load_config()
         if self.RMODE == "selenium":
             self.check_driver()
-        self.call_extractor()
+        # self.call_extractor()
 
     def load_config(self, fpath="config.yaml"):
         self.BASE_CONFIG = os.path.join(
@@ -142,7 +129,12 @@ class BaseParser(object):
         pass
 
     def get_content(self, url):
-        return self.extractor.get_content(url)
+        # TODO: refactor code
+        try:
+            return self.extractor.get_content(url)
+        except AttributeError:
+            self.call_extractor()
+            return self.extractor.get_content(url)
 
     def count_objs(self, tree, xpath_seq):
         xpath_seq = "count({})".format(xpath_seq)
@@ -155,6 +147,17 @@ class BaseParser(object):
                   to_=string.ascii_lowercase,
                   fmt_trans="translate(@{}, '{}', '{}')"):
         return fmt_trans.format(ele, from_, to_)
+
+    def get_contains(self,
+                     attr,
+                     val,
+                     name="*",
+                     get_text=False):
+        fmt_xpath = "//{}[contains(translate(@{}, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{}')]"  # noqa
+        if get_text:
+            fmt_xpath += "//text()"
+
+        return fmt_xpath.format(name, attr, val)
 
     def get_links_by_tag(self,
                          tree,
@@ -177,7 +180,7 @@ class BaseParser(object):
                         if None in (attr, val, src_attr):
                             continue
                         xpath_seq = fmt.format(name, attr, val, src_attr)
-                        print("link: {}".format(xpath_seq))
+                        # print("link: {}".format(xpath_seq))
                         res = tree.xpath(xpath_seq)
                         matches.extend(res)
 
@@ -227,6 +230,11 @@ class BaseParser(object):
         res = self.remove_empty_val(res)
         return res
 
+    def clean_all(self, text):
+        text = remove_all_html_tags(text)
+        text = remove_links_content(text)
+        return text
+
     def simplify(self, text):
         return remove_multiple_space(text).strip()
 
@@ -239,7 +247,7 @@ class BaseParser(object):
                 result.append(sent)
 
         if join:
-            return self.simplify(" ".join(result))
+            result = self.clean_all(self.simplify(" ".join(result)))
 
         return result
 
@@ -273,8 +281,18 @@ class BaseParser(object):
             return " ".join(matches)
         return matches
 
-    def exclude_content(self, elements):
-        pass
+    def exclude_content(self,
+                        tree,
+                        attrs,
+                        exc_vals):
+        fmt_xpath = "//*[contains(translate(@{}, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '{}')]"  # noqa
+        for attr in attrs:
+            for exc_val in exc_vals:
+                xpath_seq = self.get_contains(attr, exc_val)
+                for bad in tree.xpath(xpath_seq):
+                    bad.getparent().remove(bad)
+
+        return tree
 
     def remove_empty_val(self, vals):
         return [val for val in vals if len(val.strip()) > 0]

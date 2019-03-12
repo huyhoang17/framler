@@ -16,7 +16,8 @@ authors:
   attrs:
     -
     - class
-    - id  
+    - id
+    - rel
   vals:
     -
     - author
@@ -32,18 +33,39 @@ text:
     -
     - content
     - body
-    - detail
-    - fck_detail
+  exc_vals:  # exclude elements that contained values
+    - as-content
+    - author
+    - comment
+    - footer
+    # - head
+    - headline
+    - hidden
+    - info
+    - lastest
+    - meta
+    - nav
+    - popup
+    - related
+    - site-header
+    - social
+    - storyvideo
+    - suggest
+    - title
+    - zone
+
 
 pubd:
   name:
     - 
+    - time
   attrs:
     -
     - class
     - id  
   vals:
     -
+    - published
     - date
     - timer
     - timestamp
