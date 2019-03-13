@@ -142,6 +142,7 @@ class AutoCrawlParser(BaseParser):
             result = self.get_elements_by_tag(
                 temp_tree, attrs, vals, name
             )
+            del temp_tree
         else:
             if src_attrs is not None:
                 result = self.get_links_by_tag(

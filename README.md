@@ -68,10 +68,11 @@ Features
 ```
 
 - Some prerequisite libraries:
-    - Selenium
-    - Requests
+    - selenium
+    - requests
     - beautifulsoup4
     - lxml
+    - datefinder
 
 ### Command
 
