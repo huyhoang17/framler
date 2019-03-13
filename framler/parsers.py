@@ -8,7 +8,10 @@ import datefinder
 
 from ._base import BaseParser
 from .articles import Article
-from .cleaners import clean_hashtags
+from .cleaners import (
+    remove_multiple_space,
+    remove_punctuation
+)
 from .extractors import SeleniumExtractor, RequestsExtractor
 from .log import get_logger
 
@@ -102,7 +105,7 @@ class AutoCrawlParser(BaseParser):
 
     def get_authors(self, authors):
         if authors:
-            return authors[0]
+            return authors[0].strip()
         return []
 
     def get_pubd(self, seqs):
@@ -118,7 +121,16 @@ class AutoCrawlParser(BaseParser):
         return result
 
     def get_tags(self, tags):
-        return [clean_hashtags(tag) for tag in tags]
+        results = []
+        for tag in tags:
+            tag = tag.lower()
+            tag = remove_multiple_space(tag)
+            tag = remove_punctuation(tag)
+            tag = tag.strip()
+            if tag and tag not in results:
+                results.append(tag)
+
+        return results
 
     def get_image_urls(self, image_urls):
         return image_urls
@@ -138,7 +150,7 @@ class AutoCrawlParser(BaseParser):
 
         if exc_vals is not None:
             temp_tree = deepcopy(tree)
-            temp_tree = self.exclude_content(temp_tree, attrs, exc_vals)
+            self.temp_tree = self.exclude_content(temp_tree, attrs, exc_vals)
             result = self.get_elements_by_tag(
                 temp_tree, attrs, vals, name
             )
@@ -195,6 +207,6 @@ class AutoCrawlParser(BaseParser):
 
         # image_urls::links
         article.image_urls = self.get_image_urls(
-            self.parse_tag(tree, False, **cfg["image_urls"])
+            self.parse_tag(self.temp_tree, False, **cfg["image_urls"])
         )
         return article

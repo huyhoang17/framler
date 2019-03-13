@@ -75,6 +75,8 @@ class BaseExtractor(object):
                 return text
             elif self.RMODE == "requests":
                 req = requests.get(url)
+                if not req.encoding.lower().startswith("utf"):
+                    return req.content.decode("utf")  # html
                 return req.text  # html
         except TimeoutException:
             return
@@ -129,7 +131,6 @@ class BaseParser(object):
         pass
 
     def get_content(self, url):
-        # TODO: refactor code
         try:
             return self.extractor.get_content(url)
         except AttributeError:
@@ -177,14 +178,18 @@ class BaseParser(object):
             for attr in attrs:
                 for val in vals:
                     for src_attr in src_attrs:
-                        if None in (attr, val, src_attr):
+                        if src_attr is None:
                             continue
-                        xpath_seq = fmt.format(name, attr, val, src_attr)
-                        # print("link: {}".format(xpath_seq))
+                        if attr is None and val is None:
+                            xpath_seq = "//{}//@{}".format(name, src_attr)
+                        elif None in (attr, val, src_attr):
+                            continue
+                        else:
+                            xpath_seq = fmt.format(name, attr, val, src_attr)
                         res = tree.xpath(xpath_seq)
                         matches.extend(res)
 
-        return matches
+        return list(set(matches))
 
     def filter_links(self, links):
         pass
@@ -223,9 +228,6 @@ class BaseParser(object):
         else:
             attr = self.get_trans(attr)
             xpath_seq = fmt.format(name, attr, val, text)
-        # print(xpath_seq)
-        # count = self.count_objs(tree, xpath_seq)
-        # print(count)
         res = tree.xpath(xpath_seq)
         res = self.remove_empty_val(res)
         return res
