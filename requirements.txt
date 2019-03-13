@@ -3,7 +3,6 @@ certifi==2018.11.29
 chardet==3.0.4
 Click==7.0
 datefinder==0.7.0
-framler==0.0.4
 idna==2.8
 lxml==4.3.2
 python-dateutil==2.8.0
