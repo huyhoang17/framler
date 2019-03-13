@@ -137,7 +137,7 @@ In [2]: ac = framler.AutoCrawlParser("requests")
 
 In [3]: url = "https://laodong.vn/bong-da-quoc-te/lukaku-lap-cu-dup-man-united-nguoc-dong-kinh-dien-truoc-psg-660940.ldo"                                                                                           
 
-In [4]: article = ac.auto_parse(url)                                                                                                                                                                                
+In [4]: article = ac.parse(url)                                                                                                                                                                                
 
 In [5]: article.title                                                                                                                                                                                               
 Out[5]: 'Lukaku lập cú đúp, Man United ngược dòng kinh điển trước PSG'

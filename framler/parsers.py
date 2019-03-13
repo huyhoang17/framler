@@ -170,7 +170,7 @@ class AutoCrawlParser(BaseParser):
 
         return result
 
-    def auto_parse(self, url):
+    def parse(self, url):
 
         cfg = self.auto_cfg
         self.call_extractor()

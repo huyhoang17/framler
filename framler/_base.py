@@ -335,9 +335,9 @@ class BaseParser(object):
 
         p = Pool(no_cpus)
         try:
-            result = p.map(self.auto_parse, urls)
-        except AttributeError:
             result = p.map(self.parse, urls)
+        except Exception as e:
+            logger.exception(e)
         # for url in urls:
         #     result.append(p.apply_async(self.auto_parse, (url,)).get())
 
