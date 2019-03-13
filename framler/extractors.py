@@ -18,7 +18,7 @@ class SeleniumExtractor(BaseExtractor):
     BROWSER = "firefox"  # default
     RMODE = "selenium"
 
-    def __init__(self, timeout=300,
+    def __init__(self, timeout=90,
                  display_browser=False,
                  fast_load=False,
                  executable_path=None):
@@ -36,19 +36,6 @@ class SeleniumExtractor(BaseExtractor):
         # Reference:
         # - https://github.com/hailoc12/docbao/blob/master/backend/lib/crawl.py
         # - https://www.programcreek.com/python/example/100025/selenium.webdriver.ChromeOptions  # noqa
-        if self.fast_load:
-            self.profile.set_preference('permissions.default.stylesheet', 2)
-            # Disable images
-            self.profile.set_preference('permissions.default.image', 2)
-            # Disable notification
-            self.profile.set_preference(
-                'permissions.default.desktop-notification', 2)
-            # Disable Flash
-            self.profile.set_preference(
-                'dom.ipc.plugins.enabled.libflashplayer.so', 'false')
-            # Adblock Extension
-            self.profile.exp = "input/adblock.xpi"
-            self.profile.add_extension(extension=self.profile.exp)
 
         # Add path to your FirefoxDriver
         if self.executable_path is None:

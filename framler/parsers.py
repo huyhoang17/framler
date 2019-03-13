@@ -45,6 +45,7 @@ class NewspapersParser(BaseParser):
         assert self.check_valid_url(url), \
             "Invalid url for '{}' parser".format(self.PARSER)
 
+        self.call_extractor()
         article = Article(url)
         soup = self.get_soup(url)
         if soup is None:

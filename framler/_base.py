@@ -79,7 +79,8 @@ class BaseExtractor(object):
                     return req.content.decode("utf")  # html
                 return req.text  # html
         except TimeoutException:
-            return
+            logger.error("Page load Timeout Occured. Quiting: %s", url)
+            self.quit()
         except Exception as e:
             logger.exception(e)
 
