@@ -128,6 +128,105 @@ In [10]: article.author
 Out[10]: 'Anh Vũ ngovutb@gmail.com'
 ```
 
+- Crawl with auto parser mode (requests):
+
+```
+In [1]: import framler                                                                                                                                                                                              
+
+In [2]: ac = framler.AutoCrawlParser("requests")                                                                                                                                                                    
+
+In [3]: url = "https://laodong.vn/bong-da-quoc-te/lukaku-lap-cu-dup-man-united-nguoc-dong-kinh-dien-truoc-psg-660940.ldo"                                                                                           
+
+In [4]: article = ac.auto_parse(url)                                                                                                                                                                                
+
+In [5]: article.title                                                                                                                                                                                               
+Out[5]: 'Lukaku lập cú đúp, Man United ngược dòng kinh điển trước PSG'
+
+In [6]: article.text                                                                                                                                                                                                
+Out[6]: 'Với dàn đội hình gồm 7 cầu thủ được đôn lên từ tuyến trẻ của Man United, không ai nghĩ "Quỷ đỏ" lại "ca khúc khải hoàn" ngay tại thánh địa Parc des Princes của PSG. Khi khán giả còn chưa ngồi ấm chỗ, Man United bất ngờ có bàn mở tỉ số ở phút thứ 2 sau tình huống dứt điểm ở sát đường biên ngang của Lukaku. Pha bóng tinh tế đến giật mình của tiền đạo người Bỉ báo hiệu về một ngày may mắn cho các vị khách đến từ Anh. Lukaku tinh tế đến khó tin, mở tỉ số cho đội khách. Ảnh: EPA. Quả thực, đến phút 30, sau một sai lầm khá ngớ ngẩn của thủ thành kì cựu Buffon, Lukaku có bàn thắng thứ 2 trong trận đấu. Vẫn từ một tình huống theo kịch bản chớp nhoáng, Man United sống lại hi vọng đi tiếp. Trước đó, phút 12, PSG có bàn gỡ hòa 1-1 sau pha đệm bóng cận thằng của Bernat. Thế nhưng, 1 bàn là quá ít với thầy trò Tuchel ở trận này. Lukaku tiếp tục tỏa sáng. Ảnh: Reuters. Bước sang hiệp 2, không ai tin Mbappe lại chơi vô duyên đến thế. Siêu tiền đạo người Pháp bỏ phí rất nhiều cơ hội. Thậm chí, đến khi đối mặt với De Gea, anh cũng tự vấp ngã do trượt chân. Mbappe đã vậy, các mũi nhọn khác của PSG cũng không thể làm gì hơn, Di Maria đã có 1 lần đưa được bóng vào lưới nhưng trọng tài căng cờ báo việt vị. Trọng tài đã căng cờ khá muộn sau khi Di Maria dứt điểm. Ảnh: Getty. Trận đấu trôi dần về những phút cuối, Ole Solskjaer tung hết tất cả nhân tố trẻ như Chong, Greenwood vào sân. Và rồi từ một tình huống bất ngờ, Dalot nã đại bác từ ngoài vòng cấm ở phút 90, bóng chạm tay Kimpembe trong vòng cấm. Kimpembe đã quá non với pha bật lên để phòng ngự. Ảnh: BPI. Mất 3 phút xem VAR, trọng tài chính chỉ tay lên chấm 11m trong sự cay cú của Neymar ngoài đường pitch. Siêu sao Brazil không thể góp mặt do chấn thương và đành nhìn Buffon thêm một lần bị đánh bại bởi pha đá phạt đền như xé lưới của Rashford. Rashford sút penalty rất quyết đoán, đưa bóng lên góc cao. Ảnh: Reuters. Dù trọng tài chính cho thời gian bù giờ lên đến gần 10 phút nhưng những nỗ lực còn lại của PSG là không đủ. 2 năm liên tiếp, họ bị loại cay đắng bởi những kịch bản lội ngược dòng không tưởng của Barcelona và Man United. Còn với đoàn quân của Ole Solskjaer , giờ là lúc mơ về những điều tươi đẹp. Sau 10 năm, Ole Solskjaer lại ngược dòng không tưởng cùng Man United. Ảnh: Getty. Ở trận đấu còn lại, FC Porto vượt qua AS Roma trên sân nhà với tỉ số 3-1 (4-3). Bàn ấn định tỉ số được ghi ở những phút cuối hiệp phụ thứ 2 và cũng nhờ tới VAR. Manchester United , PSG'
+
+In [7]: article.published_date                                                                                                                                                                                      
+Out[7]: '2019-03-13'
+
+In [8]: article.tags                                                                                                                                                                                                
+Out[8]: ['manchester united', 'psg']
+
+In [9]: article.image_urls                                                                                                                                                                                          
+Out[9]: 
+['https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/3.jpg',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/8.jpg',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/10.jpg',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/4.jpg',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/7.jpg',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/12.jpg',
+ 'https://www.googletagmanager.com/ns.html?id=GTM-TTSKMGW',
+ 'https://certify.alexametrics.com/atrk.gif?account=BZc6s1P8cT20VR',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/11.jpg',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/5.jpg',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/13.jpg',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/9.jpg',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/6.jpg',
+ 'https://media.laodong.vn/Storage/newsportal/2019/3/6/660940/14.jpg',
+ 'https://laodong.vn/img/go-top.png']
+
+In [10]: article.authors                                                                                                                                                                                            
+Out[10]: ['VIỆT HÙNG']
+```
+
+- Crawl website use Javascript to render content (use selenium):
+
+```
+# add later, bugs :)
+```
+
+- Crawl with multiprocessing (use requests mode):
+
+```
+In [1]: import framler                                                                                                                                                                                              
+
+In [2]: ac = framler.AutoCrawlParser()                                                                                                                                                                              
+
+In [3]: urls = ['https://thanhnien.vn/thoi-su/de-xuat-dua-chuan-muc-dao-duc-nha-giao-vao-luat-de-bao-ve-hoc-sinh-1059827.html', 
+   ...:  'https://thethao.thanhnien.vn/bong-da-quoc-te/chien-thang-truoc-psg-da-mang-lai-hop-dong-dai-han-cho-solskjaer-o-mu-99218.html', 
+   ...:  'https://dantri.com.vn/xa-hoi/co-van-nha-trang-thuong-dinh-my-trieu-tai-viet-nam-la-mot-thanh-cong-20190304074414493.htm', 
+   ...:  'https://vnexpress.net/the-gioi/cuoc-gap-phut-chot-cua-doan-viet-nam-tai-binh-nhuong-truoc-thuong-dinh-my-trieu-3892871.html', 
+   ...:  'https://tuoitre.vn/bao-trieu-tien-chuyen-di-viet-nam-cua-ong-kim-ong-un-lam-rung-chuyen-the-gioi-20190306111422098.htm', 
+   ...:  'https://news.zing.vn/ong-chu-masan-tro-thanh-ty-phu-usd-khi-chi-so-huu-15-co-phieu-post922676.html', 
+   ...:  'https://vov.vn/the-gioi/tong-thong-trump-va-dang-dan-chu-2-nam-cuoc-chien-tai-quoc-hoi-882872.vov', 
+   ...:  'https://laodong.vn/bong-da-quoc-te/lukaku-lap-cu-dup-man-united-nguoc-dong-kinh-dien-truoc-psg-660940.ldo', 
+   ...:  'https://startup.vnexpress.net/tin-tuc/y-tuong-moi/startup-kiem-nua-ty-dong-nho-cong-nghe-nhan-dien-khuon-mat-3795045.html', 
+   ...:  'http://cafebiz.vn/ceo-dj-koh-thua-nhan-samsung-da-tut-xuong-vi-tri-thu-hai-o-an-do-20190308083452665.chn', 
+   ...:  'https://huyhoang17.github.io/machine-learning/2018/09/13/viblo-recommender-system.html', 
+   ...:  'http://gamek.vn/ban-da-biet-gi-ve-autochess-tua-game-day-nhan-pham-dang-lam-mua-lam-gio-trong-cong-dong-dota-2-20190212150017453.chn']                                                                    
+
+In [4]: articles = ac.run_processes(urls)                                                                                                                                                                           
+2019-03-13 11:38:56,858 - framler._base - INFO - Number of cpu: 6
+INFO:framler._base:Number of cpu: 6
+2019-03-13 11:39:14,338 - framler._base - INFO - Elapsed run time: 17.478716611862183 seconds
+INFO:framler._base:Elapsed run time: 17.478716611862183 seconds
+2019-03-13 11:39:14,338 - framler._base - INFO - Task ended. Pool join!
+INFO:framler._base:Task ended. Pool join!
+
+In [5]: len(articles)                                                                                                                                                                                               
+Out[5]: 12
+
+In [6]: for article in articles: 
+   ...:     print(article.title) 
+   ...:                                                                                                                                                                                                             
+Thời sự Đề xuất đưa chuẩn mực đạo đức nhà giáo vào luật để bảo vệ học sinh
+Chiến thắng trước PSG đã mang lại hợp đồng dài hạn cho Solskjaer ở M.U
+Cố vấn Nhà Trắng: Thượng đỉnh Mỹ - Triều tại Việt Nam là một thành công
+Cuộc gặp phút chót của đoàn Việt Nam tại Bình Nhưỡng trước thượng đỉnh Mỹ - Triều
+Báo Triều Tiên: Chuyến đi Việt Nam của ông Kim Jong Un 'làm rung chuyển thế giới'
+Zing.vn Tri thức trực tuyến Ông chủ Masan trở thành tỷ phú USD khi chỉ sở hữu 15 cổ phiếu?
+Tổng thống Trump và đảng Dân chủ: 2 năm cuộc chiến tại Quốc hội Phe Dân chủ muốn “đánh” đòn hiểm vào ông Trump bằng tài liệu nhạy cảm
+Lukaku lập cú đúp, Man United ngược dòng kinh điển trước PSG
+Startup kiếm nửa tỷ đồng nhờ công nghệ nhận diện khuôn mặt
+CEO DJ Koh thừa nhận Samsung đã tụt xuống vị trí thứ hai ở Ấn Độ
+Xây dựng hệ thống gợi ý bài viết cho ... website Viblo
+Bạn đã biết gì về Auto Chess, tựa game đầy "nhân phẩm" đang làm mưa làm gió trong cộng đồng DOTA 2
+```
+
 ### TODO
 
 - Add document
