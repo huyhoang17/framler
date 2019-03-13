@@ -105,7 +105,7 @@ class AutoCrawlParser(BaseParser):
 
     def get_authors(self, authors):
         if authors:
-            return authors[0].strip()
+            return [authors[0].strip()]
         return []
 
     def get_pubd(self, seqs):
