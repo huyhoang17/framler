@@ -6,7 +6,7 @@ framler==0.0.6
 idna==2.8
 lxml==4.3.1
 PyYAML==3.13
-requests==2.21.0
+requests==2.22.0
 selenium==3.141.0
 soupsieve==1.8
 tqdm==4.31.1
