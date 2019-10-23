@@ -5,7 +5,7 @@ Click==7.0
 framler==0.0.6
 idna==2.8
 lxml==4.3.1
-PyYAML==3.13
+PyYAML==5.1
 requests==2.21.0
 selenium==3.141.0
 soupsieve==1.8
